@@ -8,15 +8,49 @@ class Image
     const PRECISION_MEDIUM = 2;
     const PRECISION_HIGH = 3;
     
-    public $lowPrecisionSignature = null;
-    public $mediumPrecisionSignature = null;
-    public $highPrecisionSignature = null;
+    protected $lowPrecisionSignature = null;
+    protected $mediumPrecisionSignature = null;
+    protected $highPrecisionSignature = null;
     
-    public $imageResource = null;
+    protected $pathToImage = null;
+    protected $imageResource = null;
     
-    public function __construct($imageResource = null)
+    protected $width = null;
+    protected $height = null;
+    
+    /**
+     * Create a new Image object, optionally loading in the image file at the
+     * specified path.
+     * 
+     * @param string $pathToImage The path to the image file.
+     */
+    public function __construct($pathToImage = null)
     {
-        $this->imageResource = $imageResource;
+        $this->pathToImage = $pathToImage;
+    }
+    
+    public function getImageResource()
+    {
+        if ($this->imageResource === null) {
+            if ($this->pathToImage !== null) {
+                $this->loadImage($this->pathToImage);
+            }
+        }
+        return $this->imageResource;
+    }
+    
+    public function getHeight()
+    {
+        if ($this->height === null) {
+            $this->height = imagesy($this->getImageResource());
+            if ($this->height === false) {
+                throw new \Exception(
+                    "Failed to retrieve the image's height.",
+                    1424867982
+                );
+            }
+        }
+        return $this->width;
     }
     
     public static function getSignature(
@@ -33,6 +67,39 @@ class Image
         
         // Calculate and return the signature.
         return new ImageSignature($downsizedImage);
+    }
+    
+    public function getWidth()
+    {
+        if ($this->width === null) {
+            $this->width = imagesx($this->getImageResource());
+            if ($this->width === false) {
+                throw new \Exception(
+                    "Failed to retrieve the image's width.",
+                    1424868009
+                );
+            }
+        }
+        return $this->width;
+    }
+    
+    /**
+     * Read in the image data from the file at the specified path.
+     * 
+     * @param string $pathToImage The path to the image.
+     */
+    public function loadImage($pathToImage)
+    {
+        $imageResource = imagecreatefromjpeg($pathToImage);
+        
+        if ($imageResource === false) {
+            throw new Exception(
+                'Failed to read in image from "' . $pathToImage . '".',
+                1424348816
+            );
+        }
+        
+        $this->imageResource = $imageResource;
     }
     
     /**
@@ -75,5 +142,105 @@ class Image
         
         // Otherwise return the resized image resource.
         return $resizedImageResource;
+    }
+    
+    /**
+     * Slice this Image into no more than the specified number of slices. The
+     * slices will (essentially) have the same aspect ratio as the image (within
+     * a pixel each direction).
+     * 
+     * @param int $maxNumSlices The (inclusive) maximum number of slices.
+     * @return array An array of Images (each holding one of the slices).
+     */
+    public function slice($maxNumSlices)
+    {
+        // Get the aspect ratio of the image.
+        $imageWidth = $this->getWidth();
+        $imageHeight = $this->getHeight();
+        
+        // Get the largest factor of 4 that's no bigger than our max-slice
+        // limit. (Basically, we'll slice the guide image in half both ways as
+        // many times as we can).
+        $numSlices = 4;
+        while ($numSlices <= $maxNumSlices) {
+            $numSlices *= 4;
+        }
+        $numSlices /= 4;
+        $numSlicesPerDirection = sqrt($numSlices);
+        
+        // Figure out the number of pixels (horizontal and vertical) in each
+        // slice.
+        $hPixelsPerSlice = $imageWidth / $numSlicesPerDirection;
+        $vPixelsPerSlice = $imageHeight / $numSlicesPerDirection;
+        
+        // Extract all of the slices from the image.
+        $slices = array();
+        for ($hSliceOffset = 0; $hSliceOffset < $numSlicesPerDirection; $hSliceOffset++) {
+            for ($vSliceOffset = 0; $vSliceOffset < $numSlicesPerDirection; $vSliceOffset++) {
+                
+                // Figure out where this slice will start.
+                $xStart = $hSliceOffset * $hPixelsPerSlice;
+                $yStart = $vSliceOffset * $vPixelsPerSlice;
+                
+                // Extract the slice from the full image.
+                $slices[] = $this->getSlice(
+                    $xStart,
+                    ($xStart + $hPixelsPerSlice),
+                    $yStart,
+                    ($yStart + $vPixelsPerSlice)
+                );
+            }
+        }
+        
+        // Return the resulting array of Images sliced from the original.
+        return $slices;
+    }
+    
+    /**
+     * Extract a slice from this image. Any necessary rounding to end up with
+     * whole pixels will be done as late in the calculations as possible.
+     * 
+     * @param float $xStart The horizontal offset (from the left edge) where the
+     *     slice should start, in pixels.
+     * @param float $xStop The horizontal offset (from the left edge) where the
+     *     slice should stop, in pixels.
+     * @param float $yStart The vertical offset (below the top edge) where the
+     *     slice should start, in pixels.
+     * @param float $yStop The vertical offset (below the top edge) where the
+     *     slice should stop, in pixels.
+     */
+    public function getSlice(
+        $xStart,
+        $xStop,
+        $yStart,
+        $yStop
+    ) {
+        // Calculate the target dimensions.
+        $width = round($xStop - $xStart);
+        $height = round($yStop - $yStart);
+        
+        // Create the image resource into which the slice will be put.
+        $slice = imagecreatetruecolor($width, $height);
+        $success = imagecopy(
+            $slice,
+            $image,
+            0,
+            0,
+            round($xStart),
+            round($yStart),
+            $width,
+            $height
+        );
+        
+        // Stop if something went wrong.
+        if ( ! $success) {
+            throw new \Exception(
+                'Failed to extract a slice from the image.',
+                1424780302
+            );
+        }
+        
+        // Otherwise return the extracted image slice.
+        return $slice;
     }
 }
