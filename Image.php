@@ -19,8 +19,8 @@ class Image
     protected $height = null;
     
     /**
-     * Create a new Image object, optionally loading in the image file at the
-     * specified path.
+     * Create a new Image object, optionally specifying the path to a file to
+     * read in (when necessary).
      * 
      * @param string $pathToImage The path to the image file.
      */
@@ -29,6 +29,11 @@ class Image
         $this->pathToImage = $pathToImage;
     }
     
+    /**
+     * Retrieve the image resource represented by this Image.
+     * 
+     * @return resource
+     */
     public function getImageResource()
     {
         if ($this->imageResource === null) {
@@ -145,6 +150,21 @@ class Image
     }
     
     /**
+     * Set the image resource represented by this Image.
+     * 
+     * @param resource $imageResource The new image resource.
+     */
+    public function setImageResource($imageResource)
+    {
+        // Save the given image resource.
+        $this->imageResource = $imageResource;
+        
+        // Forget any path that may have been set to an image file, since that
+        // is no longer where this image's data came from (as far as we know).
+        $this->pathToImage = null;
+    }
+    
+    /**
      * Slice this Image into no more than the specified number of slices. The
      * slices will (essentially) have the same aspect ratio as the image (within
      * a pixel each direction).
@@ -173,7 +193,7 @@ class Image
         $hPixelsPerSlice = $imageWidth / $numSlicesPerDirection;
         $vPixelsPerSlice = $imageHeight / $numSlicesPerDirection;
         
-        // Extract all of the slices from the image.
+        // Extract all of the slices of the image.
         $slices = array();
         for ($hSliceOffset = 0; $hSliceOffset < $numSlicesPerDirection; $hSliceOffset++) {
             for ($vSliceOffset = 0; $vSliceOffset < $numSlicesPerDirection; $vSliceOffset++) {
@@ -220,10 +240,10 @@ class Image
         $height = round($yStop - $yStart);
         
         // Create the image resource into which the slice will be put.
-        $slice = imagecreatetruecolor($width, $height);
+        $sliceImageResource = imagecreatetruecolor($width, $height);
         $success = imagecopy(
-            $slice,
-            $image,
+            $sliceImageResource,
+            $this->getImageResource(),
             0,
             0,
             round($xStart),
@@ -239,6 +259,10 @@ class Image
                 1424780302
             );
         }
+        
+        // Create an Image object from that image resource.
+        $slice = new Image();
+        $slice->setImageResource($sliceImageResource);
         
         // Otherwise return the extracted image slice.
         return $slice;
