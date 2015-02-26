@@ -28,6 +28,11 @@ class MosaicMaker
         // images.
         $guideImageSlices = $guideImage->slice(count($sourceImages));
         
+        // Create a mosaic from those slices/images.
+        $mosaic = new Mosaic($guideImageSlices, $sourceImages);
+        
+        
+        
         
     }
     
