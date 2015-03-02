@@ -150,6 +150,22 @@ class Image
     }
     
     /**
+     * Save the image as a JPG.
+     * 
+     * @param string $pathAndFilename The full path for the file to write to.
+     * @param int $quality (Optional:) The JPG quality to use (0-100).
+     * @return boolean Whether successful.
+     */
+    public function saveAsJpg($pathAndFilename, $quality = 95)
+    {
+        return imagejpeg(
+            $this->getImageResource(),
+            $pathAndFilename,
+            $quality
+        );
+    }
+    
+    /**
      * Set the image resource represented by this Image.
      * 
      * @param resource $imageResource The new image resource.

@@ -31,10 +31,10 @@ class MosaicMaker
         // Create a mosaic from those slices/images.
         $mosaic = new Mosaic($guideImageSlices, $sourceImages);
         
+        // Generate a filename for the new mosaic image.
+        $mosaicFilename = 'Mosaic_' . time() . '.jpg';
         
-        
-        
+        // Save the mosaic image.
+        $mosaic->saveAs(dirname($pathToGuideImage) . '/' . $mosaicFilename);
     }
-    
-    
 }
