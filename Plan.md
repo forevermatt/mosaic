@@ -30,3 +30,17 @@ D.2.a. If the 1-pixel color color matches at least as well as any other source
 
 ---
 
+E.1. Take the most accurate match we found and record it in our final list.
+  2. Take the next most accurate match.  If that source image is available, 
+     record it. If not, find a new best match for that slice from among the 
+     available source images. Start this step (E.2) over.
+  3. Repeat step E.2 until all the slices have a match.
+  4. Assemble the mosaic from the data in our final list.
+
+---
+
+Match accuracy (at a given resolution) = D[1] + D[2] + ... + D[number of pixels]
+
+D = abs(R[a] - R[b]) + abs(G[a] - G[b]) + abs(B[a] - B[b])
+
+Only accuracy calculations at matching resolutions give a meaningful comparison.
