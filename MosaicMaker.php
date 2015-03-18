@@ -15,7 +15,7 @@ class MosaicMaker
      */
     public static function makeMosaic($pathToGuideImage, $pathsToSourceImages)
     {
-        //  Get the guide image.
+        // Get the guide image.
         $guideImage = new Image($pathToGuideImage);
         
         // Get the source images.
@@ -33,8 +33,10 @@ class MosaicMaker
         
         // Generate a filename for the new mosaic image.
         $mosaicFilename = 'Mosaic_' . time() . '.jpg';
+        $filePathToMosaic = dirname($pathToGuideImage) . '/' . $mosaicFilename;
         
         // Save the mosaic image.
-        $mosaic->saveAs(dirname($pathToGuideImage) . '/' . $mosaicFilename);
+        $mosaic->saveAs($filePathToMosaic);
+        return $filePathToMosaic;
     }
 }
