@@ -4,9 +4,7 @@ namespace forevermatt\mosaic;
 
 class Image
 {
-    const PRECISION_LOW = 1;
-    const PRECISION_MEDIUM = 2;
-    const PRECISION_HIGH = 3;
+    const MAX_SIGNATURE_PRECISION = 3;
     
     protected $lowPrecisionSignature = null;
     protected $mediumPrecisionSignature = null;
