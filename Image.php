@@ -165,22 +165,28 @@ class Image
     }
     
     /**
-     * Resize the given image resource to the given width and height.
+     * Get a copy of this Image at the specified width and height.
      * 
-     * @param resource $imageResource The image data to be resized.
-     * @param int $newWidth The desired width (in whole pixels).
-     * @param int $newHeight The desired height (in whole pixels).
-     * @return resource The resized image resource.
+     * @param int $desiredWidth The desired width (in whole pixels).
+     * @param int $desiredHeight The desired height (in whole pixels).
+     * @return Image The resized Image.
      * @throws \Exception
      */
-    public static function resizeImage($imageResource, $newWidth, $newHeight)
+    public function getSizedImage($desiredWidth, $desiredHeight)
     {
-        // Calculate the target dimensions.
+        $imageResource = $this->getImageResource();
+        
+        // Calculate the current dimensions.
         $initialWidth = imagesx($imageResource);
         $initialHeight = imagesy($imageResource);
         
         // Create the image resource into which the slice will be put.
-        $resizedImageResource = imagecreatetruecolor($newWidth, $newHeight);
+        $resizedImageResource = imagecreatetruecolor(
+            $desiredWidth,
+            $desiredHeight
+        );
+        
+        // Do the resize.
         $success = imagecopyresampled(
             $resizedImageResource,
             $imageResource,
@@ -188,8 +194,8 @@ class Image
             0,
             0,
             0,
-            $newWidth,
-            $newHeight,
+            $desiredWidth,
+            $desiredHeight,
             $initialWidth,
             $initialHeight
         );
@@ -202,8 +208,10 @@ class Image
             );
         }
         
-        // Otherwise return the resized image resource.
-        return $resizedImageResource;
+        // Otherwise return the resized image resource as a new Image.
+        $sizedImage = new Image();
+        $sizedImage->setImageResource($resizedImageResource);
+        return $sizedImage;
     }
     
     /**
