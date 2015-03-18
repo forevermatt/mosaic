@@ -30,6 +30,55 @@ class Image
     }
     
     /**
+     * Get the actual color difference between the two given signature images.
+     * 
+     * @param Image $signature1 The first image's signature.
+     * @param Image $signature2 The second image's signature.
+     * @return int The difference between the two signatures Images.
+     */
+    protected function getAbsoluteDifference($signature1, $signature2)
+    {
+        // Get the dimensions of the two signature images.
+        $width1 = $signature1->getWidth();
+        $height1 = $signature1->getHeight();
+        $width2 = $signature2->getWidth();
+        $height2 = $signature2->getHeight();
+        
+        // If the two signature images are different, stop.
+        if (($width1 !== $width2) || ($height1 !== $height2)) {
+            throw new \Exception(
+                'Cannot compare signature images of different precision '
+                . 'levels.',
+                1425386364
+            );
+        }
+        
+        // For each pixel in the images, add up the color differences.
+        ....
+    }
+    
+    /**
+     * Compare this image with the given image using signatures at the specified
+     * precision level (>= 1, higher equals more precise).
+     * 
+     * @param Image $otherImage The Image to compare this Image with.
+     * @param int $precision How precise a comparison to do.
+     * @return int The difference between the two signatures at that precision
+     *     level.
+     */
+    public function getSignatureDifference($otherImage, $precision)
+    {
+        // Get this image's signature.
+        $thisSignature = $this->getSignature($precision);
+        
+        // Get the other image's signature.
+        $otherSignature = $otherImage->getSignature($precision);
+        
+        // Return the difference of the two signature images.
+        return $thisSignature->getAbsoluteDifference($otherSignature);
+    }
+    
+    /**
      * Retrieve the image resource represented by this Image.
      * 
      * @return resource
