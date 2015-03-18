@@ -11,31 +11,41 @@ C.1. Count source images.
 
 ---
 
-D.1. Get signature of each source image.
-  2. For each slice, find the best match in the source images, not excluding any yet.
+D.1. For each slice, find the best match in the source images, not excluding
+     any yet.
+  2. Take the most accurate match we found and record it in our final list.
+  3. Take the next most accurate match.  If that source image is available, 
+     record it; if not, find a new best match for that slice from among the 
+     available source images. Start this step (D.3) over.
+  4. Repeat step D.3 until all the slices have a match.
 
 ---
 
-D.1.a. Downsize the slice to 1 pixel. Record color.
-    b. If/when necessary, up to a finite limit, downsize the original slice to
-       four (4) times as many pixels as last time. Record colors.
+D.1.a. Get signature of the current slice.
+    b. Compare it with each source image's signature and make a note of which
+       one is the best match.
 
 ---
 
-D.2.a. If the 1-pixel color color matches at least as well as any other source
-       images so far, keep it. Forget any that don't match as well.
-    b. If we have several equal matches, compare the next higher resolution.
-       Repeat until we found a "best" match (up to a finite limit).
-    c. Record how accurate a match it was.
+
+D.1.a.i. Downsize the slice to 1 pixel. Record the color.
+     ii. If/when necessary (to find a more precise match), up to a finite
+         limit, downsize the original slice to four (4) times as many pixels as
+         last time. Record the color of each pixel.
 
 ---
 
-E.1. Take the most accurate match we found and record it in our final list.
-  2. Take the next most accurate match.  If that source image is available, 
-     record it. If not, find a new best match for that slice from among the 
-     available source images. Start this step (E.2) over.
-  3. Repeat step E.2 until all the slices have a match.
-  4. Assemble the mosaic from the data in our final list.
+D.1.b.i. If the 1-pixel color matches at least as well as any other source images
+         so far, keep it. Forget any that don't match as well.
+     ii. If we have several equal matches, compare the next higher resolution.
+         Repeat until we found a "best" match (up to a finite limit, taking the
+         first of our current "best" matches found if the limit is reached).
+    iii. Record how accurate a match it was.
+
+---
+
+E.1. Create a new empty image.
+  2. Insert each of the source images from our final list of best matches.
 
 ---
 
