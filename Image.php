@@ -107,20 +107,28 @@ class Image
         return $this->width;
     }
     
-    public static function getSignature(
-        $imageResource,
-        $precision = self::PRECISION_LOW
-    ) {
-        // Resize the image resource down to the size necessary for the
-        // specified precision level.
-        $downsizedImage = self::resizeImage(
-            $imageResource,
-            $precision,
-            $precision
-        );
-        
-        // Calculate and return the signature.
-        return new ImageSignature($downsizedImage);
+    /**
+     * Get a "signature" of this Image by downsizing it to a very few pixels.
+     * 
+     * @param int $precision The number of pixels-per-side to downsize the image
+     *     to for comparing with another image's signature.
+     * @return Image The signature image (to use for comparing).
+     */
+    public function getSignature($precision)
+    {
+        // If we haven't yet calculated the signature at the indicated
+        // precision, do so.
+        if ( ! array_key_exists($this->signatures, $precision)) {
+            
+            // Resize the image resource down to the size necessary for the
+            // specified precision level.
+            $sizedImage = $this->getSizedImage(
+                $precision,
+                $precision
+            );
+            $this->signatures[$precision] = $sizedImage;
+        }
+        return $this->signatures[$precision];
     }
     
     public function getWidth()
