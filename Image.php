@@ -6,9 +6,7 @@ class Image
 {
     const MAX_SIGNATURE_PRECISION = 3;
     
-    protected $lowPrecisionSignature = null;
-    protected $mediumPrecisionSignature = null;
-    protected $highPrecisionSignature = null;
+    protected $signatures = array();
     
     protected $pathToImage = null;
     protected $imageResource = null;
