@@ -21,26 +21,16 @@ D.1. For each slice, find the best match in the source images, not excluding
 
 ---
 
-D.1.a. Get signature of the current slice.
-    b. Compare it with each source image's signature and make a note of which
-       one is the best match.
+D.1.a. Downsize the slice to 1 pixel. Record the RGB values of the pixel.
+    b. Compare that with each of the source images.
+    c. Make a note of which source image matche this slice best.
 
 ---
 
-
-D.1.a.i. Downsize the slice to 1 pixel. Record the color.
-     ii. If/when necessary (to find a more precise match), up to a finite
-         limit, downsize the original slice to four (4) times as many pixels as
-         last time. Record the color of each pixel.
-
----
-
-D.1.b.i. If the 1-pixel color matches at least as well as any other source images
-         so far, keep it. Forget any that don't match as well.
-     ii. If we have several equal matches, compare the next higher resolution.
-         Repeat until we found a "best" match (up to a finite limit, taking the
-         first of our current "best" matches found if the limit is reached).
-    iii. Record how accurate a match it was.
+D.1.b.i. Downsize the source image to 1 pixel. Record the RGB values of the
+         pixel.
+     ii. Calculate the absolute difference of slice's pixel's color with this
+         source image's pixel's color.
 
 ---
 
