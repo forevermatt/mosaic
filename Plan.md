@@ -1,3 +1,7 @@
+# Mosaic Maker #
+
+## Plan ##
+
 A. Get guide image.
 B. Get source images.
 C. Slice up guide image.
@@ -44,3 +48,12 @@ Match accuracy (at a given resolution) = D[1] + D[2] + ... + D[number of pixels]
 D = abs(R[a] - R[b]) + abs(G[a] - G[b]) + abs(B[a] - B[b])
 
 Only accuracy calculations at matching resolutions give a meaningful comparison.
+
+## Glossary ##
+
+- *guide image*:
+  The image that the mosaic is trying to mimic.
+- *slice* (aka. guide image slice):
+  A portion of the original guide image.
+- *source images*:
+  The images being used to recreate the guide image as a mosaic.
