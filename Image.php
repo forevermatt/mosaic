@@ -14,6 +14,8 @@ class Image
     protected $width = null;
     protected $height = null;
     
+    protected $alreadyUsedInMosaic = false;
+    
     /**
      * Create a new Image object, optionally specifying the path to a file to
      * read in (when necessary).
