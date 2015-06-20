@@ -27,7 +27,7 @@ D.1. For each slice, find the best match in the source images, not excluding
 
 D.1.a. Downsize the slice to 1 pixel. Record the RGB values of the pixel.
     b. Compare that with each of the source images.
-    c. Make a note of which source image matche this slice best.
+    c. Make a note of which source image matches this slice best.
 
 ---
 
