@@ -14,7 +14,7 @@ class Image
     
     protected $desiredAspectRatio = null;
     
-//    protected $maxWidth = null;
+    protected $maxWidth = null;
 //    protected $maxHeight = null;
     
     protected $alreadyUsedInMosaic = false;
@@ -26,21 +26,21 @@ class Image
      * @param string $pathToImage The path to the image file.
      * @param float $desiredAspectRatio (Optional:) If specified, the image at
      *     the specified path will be cropped to match the target aspect ratio.
-     * 
      * @param int $maxWidth (Optional:) The max width to store of a copy of this
      *     image at (for internal use).
+     * 
      * @param int $maxHeight (Optional:) The max height to store of a copy of
      *     this image at (for internal use).
      */
     public function __construct(
         $pathToImage = null,
-        $desiredAspectRatio = null//,
-        //$maxWidth = null,
+        $desiredAspectRatio = null,
+        $maxWidth = null//,
         //$maxHeight = null
     ) {
         $this->pathToImage = $pathToImage;
         $this->desiredAspectRatio = $desiredAspectRatio;
-//        $this->maxWidth = $maxWidth;
+        $this->maxWidth = $maxWidth;
 //        $this->maxHeight = $maxHeight;
     }
     
@@ -120,7 +120,7 @@ class Image
         $imageResource,
         $targetAspectRatio
     ) {
-        echo 'Cropping ' . $this->getFileName() . '...' . PHP_EOL;
+        echo 'Cropping image...' . PHP_EOL;
         
         $imageWidth = \imagesx($imageResource);
         $imageHeight = \imagesy($imageResource);
@@ -159,8 +159,7 @@ class Image
         if ( ! $successful) {
             throw new Exception(
                 sprintf(
-                    'Failed to crop %s down to %sx%s.%s',
-                    var_export($this->getFileName(), true),
+                    'Failed to crop image down to %sx%s.%s',
                     $widthToUse,
                     $heightToUse,
                     PHP_EOL
@@ -313,6 +312,20 @@ class Image
             );
         }
         
+        if ($this->maxWidth !== null) {
+            $imageWidth = \imagesx($imageResource);
+            if ($imageWidth > $this->maxWidth) {
+                $downsizedWidth = $this->maxWidth;
+                $downsizedHeight = $downsizedWidth / $this->desiredAspectRatio;
+                
+                $imageResource = self::resizeImageResource(
+                    $imageResource,
+                    $downsizedWidth,
+                    $downsizedHeight
+                );
+            }
+        }
+        
 //        if (($this->maxWidth !== null) && ($this->maxHeight !== null)) {
 //            
 //            $sizedIiamgeResource = imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
@@ -341,6 +354,31 @@ class Image
         
         $imageResource = $this->getImageResource();
         
+        $resizedImageResource = self::resizeImageResource(
+            $imageResource,
+            $desiredWidth,
+            $desiredHeight
+        );
+        
+        // Otherwise return the resized image resource as a new Image.
+        $sizedImage = new Image();
+        $sizedImage->setImageResource($resizedImageResource);
+        return $sizedImage;
+    }
+    
+    /**
+     * Get a copy of this Image at the specified width and height.
+     * 
+     * @param int $desiredWidth The desired width (in whole pixels).
+     * @param int $desiredHeight The desired height (in whole pixels).
+     * @return Image The resized Image.
+     * @throws \Exception
+     */
+    public static function resizeImageResource(
+        $imageResource,
+        $desiredWidth,
+        $desiredHeight
+    ) {
         // Calculate the current dimensions.
         $initialWidth = \imagesx($imageResource);
         $initialHeight = \imagesy($imageResource);
@@ -373,10 +411,7 @@ class Image
             );
         }
         
-        // Otherwise return the resized image resource as a new Image.
-        $sizedImage = new Image();
-        $sizedImage->setImageResource($resizedImageResource);
-        return $sizedImage;
+        return $resizedImageResource;
     }
     
     /**
