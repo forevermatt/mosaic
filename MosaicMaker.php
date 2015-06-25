@@ -25,7 +25,8 @@ class MosaicMaker
         foreach ($pathsToSourceImages as $pathToSourceImage) {
             $sourceImages[] = new Image(
                 $pathToSourceImage,
-                $guideImageAspectRatio
+                $guideImageAspectRatio,
+                200
             );
         }
         
