@@ -13,14 +13,16 @@ if ($argc < 3) {
 }
 
 $pathToGuideImage = $argv[1];
-$pathsToSourceImages = glob(realpath($argv[2]) . '/*.jpg');
+$pathsToSourceImages = glob(realpath($argv[2]) . '/*.*');
 
 //die(var_dump(
 //    $pathToGuideImage,
 //    $pathsToSourceImages
 //));
 
-forevermatt\mosaic\MosaicMaker::makeMosaic(
+$mosaicFileName = forevermatt\mosaic\MosaicMaker::makeMosaic(
     $pathToGuideImage,
     $pathsToSourceImages
 );
+echo 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL;
+
