@@ -15,27 +15,28 @@ class MosaicMaker
      */
     public static function makeMosaic($pathToGuideImage, $pathsToSourceImages)
     {
-        // Get the guide image.
+        // Step A: Get the guide image.
         $guideImage = new Image($pathToGuideImage);
         
-        // Get the source images.
+        $guideImageAspectRatio = $guideImage->getAspectRatio();
+        
+        // Step B: Get the source images.
         $sourceImages = array();
         foreach ($pathsToSourceImages as $pathToSourceImage) {
-            $sourceImages[] = new Image($pathToSourceImage);
+            $sourceImages[] = new Image(
+                $pathToSourceImage,
+                $guideImageAspectRatio
+            );
         }
         
-        // Slice up the guide image into no more than the number of source
-        // images.
-        $guideImageSlices = $guideImage->slice(count($sourceImages));
-        
         // Create a mosaic from those slices/images.
-        $mosaic = new Mosaic($guideImageSlices, $sourceImages);
+        $mosaic = new Mosaic($guideImage, $sourceImages);
         
         // Generate a filename for the new mosaic image.
-        $mosaicFilename = 'Mosaic_' . time() . '.jpg';
+        $mosaicFilename = 'Mosaic_' . microtime(true) . '.jpg';
         $filePathToMosaic = dirname($pathToGuideImage) . '/' . $mosaicFilename;
         
-        // Save the mosaic image.
+        // Steps D & E: (Lazily generate and) save the mosaic image.
         $mosaic->saveAs($filePathToMosaic);
         return $filePathToMosaic;
     }

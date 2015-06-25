@@ -4,8 +4,6 @@ namespace forevermatt\mosaic;
 
 class Image
 {
-    const MAX_SIGNATURE_PRECISION = 3;
-    
     protected $signatures = array();
     
     protected $pathToImage = null;
@@ -14,6 +12,11 @@ class Image
     protected $width = null;
     protected $height = null;
     
+    protected $desiredAspectRatio = null;
+    
+//    protected $maxWidth = null;
+//    protected $maxHeight = null;
+    
     protected $alreadyUsedInMosaic = false;
     
     /**
@@ -21,10 +24,24 @@ class Image
      * read in (when necessary).
      * 
      * @param string $pathToImage The path to the image file.
+     * @param float $desiredAspectRatio (Optional:) If specified, the image at
+     *     the specified path will be cropped to match the target aspect ratio.
+     * 
+     * @param int $maxWidth (Optional:) The max width to store of a copy of this
+     *     image at (for internal use).
+     * @param int $maxHeight (Optional:) The max height to store of a copy of
+     *     this image at (for internal use).
      */
-    public function __construct($pathToImage = null)
-    {
+    public function __construct(
+        $pathToImage = null,
+        $desiredAspectRatio = null//,
+        //$maxWidth = null,
+        //$maxHeight = null
+    ) {
         $this->pathToImage = $pathToImage;
+        $this->desiredAspectRatio = $desiredAspectRatio;
+//        $this->maxWidth = $maxWidth;
+//        $this->maxHeight = $maxHeight;
     }
     
     /**
@@ -34,13 +51,13 @@ class Image
      * @param Image $signature2 The second image's signature.
      * @return int The difference between the two signatures Images.
      */
-    protected function getAbsoluteDifference($signature1, $signature2)
+    protected function getAbsoluteDifference($otherSignature)
     {
         // Get the dimensions of the two signature images.
-        $width1 = $signature1->getWidth();
-        $height1 = $signature1->getHeight();
-        $width2 = $signature2->getWidth();
-        $height2 = $signature2->getHeight();
+        $width1 = $this->getWidth();
+        $height1 = $this->getHeight();
+        $width2 = $otherSignature->getWidth();
+        $height2 = $otherSignature->getHeight();
         
         // If the two signature images are different, stop.
         if (($width1 !== $width2) || ($height1 !== $height2)) {
@@ -51,20 +68,43 @@ class Image
             );
         }
         
+        $imageResource1 = $this->getImageResource();
+        $imageResource2 = $otherSignature->getImageResource();
+        
+        $totalDifference = 0;
+        
         // For each pixel in the images, add up the color differences.
-        ....
+        for ($x = 0; $x < $width1; $x++) {
+            for ($y = 0; $y < $height1; $y++) {
+                $color1 = imagecolorsforindex(
+                    $imageResource1,
+                    imagecolorat($imageResource1, $x, $y)
+                );
+                $color2 = imagecolorsforindex(
+                    $imageResource2,
+                    imagecolorat($imageResource2, $x, $y)
+                );
+                $pixelDifference = abs($color1['red'] - $color2['red'])
+                    + abs($color1['green'] - $color2['green'])
+                    + abs($color1['blue'] - $color2['blue']);
+                $totalDifference += $pixelDifference;
+            }
+        }
+        
+        return $pixelDifference;
     }
     
     /**
-     * Compare this image with the given image using signatures at the specified
-     * precision level (>= 1, higher equals more precise).
+     * Compare this image with the given image using signatures (i.e. downsized
+     * copies of the each image) at the specified precision level (>= 1, higher
+     * equals more precise).
      * 
      * @param Image $otherImage The Image to compare this Image with.
      * @param int $precision How precise a comparison to do.
      * @return int The difference between the two signatures at that precision
      *     level.
      */
-    public function getSignatureDifference($otherImage, $precision)
+    public function compareWith($otherImage, $precision = 1)
     {
         // Get this image's signature.
         $thisSignature = $this->getSignature($precision);
@@ -74,6 +114,79 @@ class Image
         
         // Return the difference of the two signature images.
         return $thisSignature->getAbsoluteDifference($otherSignature);
+    }
+    
+    public static function cropImageResourceToAspectRatio(
+        $imageResource,
+        $targetAspectRatio
+    ) {
+        echo 'Cropping ' . $this->getFileName() . '...' . PHP_EOL;
+        
+        $imageWidth = \imagesx($imageResource);
+        $imageHeight = \imagesy($imageResource);
+        $imageAspectRatio = $imageWidth / $imageHeight;
+        
+        // If the given image resource is too wide...
+        if ($imageAspectRatio > $targetAspectRatio) {
+            
+            // Use the full height, but a narrower width.
+            $heightToUse = $imageHeight;
+            $verticalOffset = 0;
+            $widthToUse = (int)round($imageHeight * $targetAspectRatio);
+            $horizontalOffset = (int)round(($imageWidth - $widthToUse) / 2);
+            
+        } else {
+            
+            // Use the full width, but a shorter height.
+            $heightToUse = (int)round($imageWidth / $targetAspectRatio);;
+            $verticalOffset = (int)round(($imageHeight - $heightToUse) / 2);
+            $widthToUse = $imageWidth;
+            $horizontalOffset = 0;
+        }
+        
+        $croppedImageResource = imagecreatetruecolor($widthToUse, $heightToUse);
+        $successful = imagecopy(
+            $croppedImageResource,
+            $imageResource,
+            0,
+            0,
+            $horizontalOffset,
+            $verticalOffset,
+            $widthToUse,
+            $heightToUse
+        );
+        
+        if ( ! $successful) {
+            throw new Exception(
+                sprintf(
+                    'Failed to crop %s down to %sx%s.%s',
+                    var_export($this->getFileName(), true),
+                    $widthToUse,
+                    $heightToUse,
+                    PHP_EOL
+                ),
+                1435259752
+            );
+        }
+        
+        return $croppedImageResource;
+        
+        //// TEMP
+        //die(var_dump(
+        //    $imageWidth,
+        //    $imageHeight,
+        //    $imageAspectRatio,
+        //    $targetAspectRatio,
+        //    $widthToUse,
+        //    $heightToUse,
+        //    $horizontalOffset,
+        //    $verticalOffset
+        //));
+    }
+    
+    public function getAspectRatio()
+    {
+        return ($this->getWidth() / $this->getHeight());
     }
     
     /**
@@ -91,10 +204,21 @@ class Image
         return $this->imageResource;
     }
     
+    public function getFileExtension($pathToImage)
+    {
+        $finalDotIndex = strrpos($pathToImage, '.');
+        return strtolower(substr($pathToImage, $finalDotIndex + 1));
+    }
+    
+    public function getFileName()
+    {
+        return is_null($this->pathToImage) ? null : basename($this->pathToImage);
+    }
+    
     public function getHeight()
     {
         if ($this->height === null) {
-            $this->height = imagesy($this->getImageResource());
+            $this->height = \imagesy($this->getImageResource());
             if ($this->height === false) {
                 throw new \Exception(
                     "Failed to retrieve the image's height.",
@@ -102,7 +226,7 @@ class Image
                 );
             }
         }
-        return $this->width;
+        return $this->height;
     }
     
     /**
@@ -116,7 +240,18 @@ class Image
     {
         // If we haven't yet calculated the signature at the indicated
         // precision, do so.
-        if ( ! array_key_exists($this->signatures, $precision)) {
+        if ( ! array_key_exists($precision, $this->signatures)) {
+            
+            // Make sure we were given a valid precision value.
+            if ($precision < 1) {
+                throw new \Exception(
+                    sprintf(
+                        'Precision values must be positive integers (not %s).',
+                        var_export($precision, true)
+                    ),
+                    1434765882
+                );
+            }
             
             // Resize the image resource down to the size necessary for the
             // specified precision level.
@@ -132,7 +267,7 @@ class Image
     public function getWidth()
     {
         if ($this->width === null) {
-            $this->width = imagesx($this->getImageResource());
+            $this->width = \imagesx($this->getImageResource());
             if ($this->width === false) {
                 throw new \Exception(
                     "Failed to retrieve the image's width.",
@@ -150,7 +285,18 @@ class Image
      */
     public function loadImage($pathToImage)
     {
-        $imageResource = imagecreatefromjpeg($pathToImage);
+        echo sprintf(
+            'Loading image "%s"...%s',
+            $this->getFileName(),
+            PHP_EOL
+        );
+        
+        $fileExtension = self::getFileExtension($pathToImage);
+        if (($fileExtension === 'jpg') || ($fileExtension === 'jpeg')) {
+            $imageResource = imagecreatefromjpeg($pathToImage);
+        } else {
+            $imageResource = imagecreatefrompng($pathToImage);
+        }
         
         if ($imageResource === false) {
             throw new Exception(
@@ -158,6 +304,19 @@ class Image
                 1424348816
             );
         }
+        
+        if ($this->desiredAspectRatio !== null) {
+            
+            $imageResource = self::cropImageResourceToAspectRatio(
+                $imageResource,
+                $this->desiredAspectRatio
+            );
+        }
+        
+//        if (($this->maxWidth !== null) && ($this->maxHeight !== null)) {
+//            
+//            $sizedIiamgeResource = imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
+//        }
         
         $this->imageResource = $imageResource;
     }
@@ -172,11 +331,19 @@ class Image
      */
     public function getSizedImage($desiredWidth, $desiredHeight)
     {
+        echo sprintf(
+            'Resizing %s to %sx%s...%s',
+            var_export($this->getFileName(), true),
+            $desiredWidth,
+            $desiredHeight,
+            PHP_EOL
+        );
+        
         $imageResource = $this->getImageResource();
         
         // Calculate the current dimensions.
-        $initialWidth = imagesx($imageResource);
-        $initialHeight = imagesy($imageResource);
+        $initialWidth = \imagesx($imageResource);
+        $initialHeight = \imagesy($imageResource);
         
         // Create the image resource into which the slice will be put.
         $resizedImageResource = imagecreatetruecolor(
@@ -210,6 +377,21 @@ class Image
         $sizedImage = new Image();
         $sizedImage->setImageResource($resizedImageResource);
         return $sizedImage;
+    }
+    
+    /**
+     * Find out whether this Image has already been marked as "used".
+     * 
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return ( ! $this->alreadyUsedInMosaic);
+    }
+    
+    public function markAsUsed()
+    {
+        $this->alreadyUsedInMosaic = true;
     }
     
     /**
@@ -307,6 +489,8 @@ class Image
      *     slice should start, in pixels.
      * @param float $yStop The vertical offset (below the top edge) where the
      *     slice should stop, in pixels.
+     * @return ImageSlice
+     * @throws \Exception
      */
     public function getSlice(
         $xStart,
@@ -318,6 +502,10 @@ class Image
         $width = round($xStop - $xStart);
         $height = round($yStop - $yStart);
         
+        // Calculate the whole-number width and height.
+        $xStartRounded = round($xStart);
+        $yStartRounded = round($yStart);
+        
         // Create the image resource into which the slice will be put.
         $sliceImageResource = imagecreatetruecolor($width, $height);
         $success = imagecopy(
@@ -325,8 +513,8 @@ class Image
             $this->getImageResource(),
             0,
             0,
-            round($xStart),
-            round($yStart),
+            $xStartRounded,
+            $yStartRounded,
             $width,
             $height
         );
@@ -340,8 +528,10 @@ class Image
         }
         
         // Create an Image object from that image resource.
-        $slice = new Image();
+        $slice = new ImageSlice();
         $slice->setImageResource($sliceImageResource);
+        $slice->xOffsetInParent = $xStartRounded;
+        $slice->yOffsetInParent = $yStartRounded;
         
         // Otherwise return the extracted image slice.
         return $slice;
