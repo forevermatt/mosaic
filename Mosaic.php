@@ -78,15 +78,15 @@ class Mosaic
                 $finalMatchList[] = $bestMatch;
                 $bestMatch->markSourceImageAsUsed();
                 
-                // TEMP
-                $bestMatch->getSlice()->saveAsJpg($tempCounter . '_slice.jpg');
-                $bestMatch->getSourceImage()
-                          ->getSizedImage(
-                              $bestMatch->getSlice()->getWidth(),
-                              $bestMatch->getSlice()->getHeight()
-                          )
-                          ->saveAsJpg($tempCounter . '_source-image.jpg');
-                $tempCounter++;
+                //// TEMP
+                //$bestMatch->getSlice()->saveAsJpg($tempCounter . '_slice.jpg');
+                //$bestMatch->getSourceImage()
+                //          ->getSizedImage(
+                //              $bestMatch->getSlice()->getWidth(),
+                //              $bestMatch->getSlice()->getHeight()
+                //          )
+                //          ->saveAsJpg($tempCounter . '_source-image.jpg');
+                //$tempCounter++;
                 
             } else {
                 
