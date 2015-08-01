@@ -4,17 +4,14 @@ namespace forevermatt\mosaic;
 
 class GuideImage extends Image
 {
-    public function __construct(
-        $pathToImage = null,
-        $desiredAspectRatio = null,
-        $maxWidth = null,
-        $cacheInMemory = false
-    ) {
-        parent::__construct(
-            $pathToImage,
-            $desiredAspectRatio,
-            $maxWidth,
-            $cacheInMemory
-        );
+    /**
+     * Create a new GuideImage.
+     * 
+     * @param string $pathToImage The path to the guide image file.
+     */
+    public function __construct($pathToImage = null)
+    {
+        // Make sure the guide image is cached in memory.
+        parent::__construct($pathToImage, null, null, true);
     }
 }
