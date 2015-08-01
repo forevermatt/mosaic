@@ -16,7 +16,7 @@ class MosaicMaker
     public static function makeMosaic($pathToGuideImage, $pathsToSourceImages)
     {
         // Step A: Get the guide image.
-        $guideImage = new Image($pathToGuideImage, null, null, true);
+        $guideImage = new GuideImage($pathToGuideImage, null, null, true);
         
         $guideImageAspectRatio = $guideImage->getAspectRatio();
         
