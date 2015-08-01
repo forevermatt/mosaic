@@ -28,9 +28,9 @@ class Image
      *     the specified path will be cropped to match the target aspect ratio.
      * @param int $maxWidth (Optional:) The max width to store of a copy of this
      *     image at (for internal use).
-     * 
-     * @param int $maxHeight (Optional:) The max height to store of a copy of
-     *     this image at (for internal use).
+     * @param bool $cacheInMemory (Optional:) Whether to store the image data in
+     *     memory. Defaults to false, in which case the image file is read in
+     *     again each time it is needed.
      */
     public function __construct(
         $pathToImage = null,
