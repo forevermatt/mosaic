@@ -199,13 +199,13 @@ class Mosaic
             $precision
         );
         
-        while ((++$precision <= 4) && (count($bestMatches) > 1)) {
-            $bestMatches = $this->getBestMatchesForSliceAtPrecisionLevel(
-                $slice,
-                $sourceImages,
-                $precision
-            );
-        }
+        //while ((++$precision <= 4) && (count($bestMatches) > 1)) {
+        //    $bestMatches = $this->getBestMatchesForSliceAtPrecisionLevel(
+        //        $slice,
+        //        $sourceImages,
+        //        $precision
+        //    );
+        //}
         
         return $bestMatches[0];
     }
