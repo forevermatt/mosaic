@@ -112,17 +112,20 @@ class Mosaic
      */
     protected function assembleImageFromMatches($matches)
     {
+        // Define how much bigger (that the guide image) to make the mosaic.
+        $multiplier = 1;
+        
         // TEMP
         echo sprintf(
             'Creating %sx%s empty true-color image...%s',
-            $this->guideImage->getWidth(),
-            $this->guideImage->getHeight(),
+            $this->guideImage->getWidth() * $multiplier,
+            $this->guideImage->getHeight() * $multiplier,
             PHP_EOL
         );
         
         $imageResource = imagecreatetruecolor(
-            $this->guideImage->getWidth(),
-            $this->guideImage->getHeight()
+            $this->guideImage->getWidth() * $multiplier,
+            $this->guideImage->getHeight() * $multiplier
         );
         
         // TEMP
@@ -139,12 +142,12 @@ class Mosaic
             $success = imagecopyresampled(
                 $imageResource,
                 $imageToInsert->getImageResource(),
-                $guideImageSlice->xOffsetInParent,
-                $guideImageSlice->yOffsetInParent,
+                $guideImageSlice->xOffsetInParent * $multiplier,
+                $guideImageSlice->yOffsetInParent * $multiplier,
                 0,
                 0,
-                $guideImageSlice->getWidth(),
-                $guideImageSlice->getHeight(),
+                $guideImageSlice->getWidth() * $multiplier,
+                $guideImageSlice->getHeight() * $multiplier,
                 $imageToInsert->getWidth(),
                 $imageToInsert->getHeight()
             );
