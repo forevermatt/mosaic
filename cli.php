@@ -20,11 +20,6 @@ $pathsToSourceImages = array_merge(
     glob(realpath($argv[2]) . '/**/*.*') // = any immediate subfolders.
 );
 
-//die(var_dump(
-//    $pathToGuideImage,
-//    $pathsToSourceImages
-//));
-
 $mosaicFileName = forevermatt\mosaic\MosaicMaker::makeMosaic(
     $pathToGuideImage,
     $pathsToSourceImages
