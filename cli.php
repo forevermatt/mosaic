@@ -1,5 +1,7 @@
 <?php
 
+$startTime = time();
+
 require_once __DIR__ . '/MosaicMaker.php';
 require_once __DIR__ . '/Image.php';
 require_once __DIR__ . '/ImageSlice.php';
@@ -25,4 +27,4 @@ $mosaicFileName = forevermatt\mosaic\MosaicMaker::makeMosaic(
     $pathsToSourceImages
 );
 echo 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL;
-
+echo '(Run time: ' . (time() - $startTime) . ' seconds)' . PHP_EOL;
