@@ -15,7 +15,10 @@ if ($argc < 3) {
 }
 
 $pathToGuideImage = $argv[1];
-$pathsToSourceImages = glob(realpath($argv[2]) . '/*.*');
+$pathsToSourceImages = array_merge(
+    glob(realpath($argv[2]) . '/*.*'),   // = the specified folder.
+    glob(realpath($argv[2]) . '/**/*.*') // = any immediate subfolders.
+);
 
 //die(var_dump(
 //    $pathToGuideImage,
