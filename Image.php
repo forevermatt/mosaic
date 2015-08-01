@@ -215,7 +215,7 @@ class Image
         return $this->imageResource;
     }
     
-    public function getFileExtension($pathToImage)
+    public static function getFileExtension($pathToImage)
     {
         $finalDotIndex = strrpos($pathToImage, '.');
         return strtolower(substr($pathToImage, $finalDotIndex + 1));
@@ -287,6 +287,15 @@ class Image
             }
         }
         return $this->width;
+    }
+    
+    public static function isImageFile($pathToFile)
+    {
+        $fileExtension = self::getFileExtension($pathToFile);
+        return in_array(
+            $fileExtension,
+            array('jpg', 'jpeg', 'png')
+        );
     }
     
     /**

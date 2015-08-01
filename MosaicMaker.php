@@ -23,11 +23,17 @@ class MosaicMaker
         // Step B: Get the source images.
         $sourceImages = array();
         foreach ($pathsToSourceImages as $pathToSourceImage) {
-            $sourceImages[] = new Image(
-                $pathToSourceImage,
-                $guideImageAspectRatio,
-                200
-            );
+            if (Image::isImageFile($pathToSourceImage)) {
+                try {
+                    $sourceImages[] = new Image(
+                        $pathToSourceImage,
+                        $guideImageAspectRatio,
+                        100
+                    );
+                } catch (\Exception $e) {
+                    echo 'Skipping "' . $pathToSourceImage . '".' . PHP_EOL;
+                }
+            }
         }
         
         // Create a mosaic from those slices/images.
