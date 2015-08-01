@@ -58,7 +58,7 @@ class Image
         $height1 = $this->getHeight();
         $width2 = $otherSignature->getWidth();
         $height2 = $otherSignature->getHeight();
-        
+
         // If the two signature images are different, stop.
         if (($width1 !== $width2) || ($height1 !== $height2)) {
             throw new \Exception(
@@ -67,12 +67,12 @@ class Image
                 1425386364
             );
         }
-        
+
         $imageResource1 = $this->getImageResource();
         $imageResource2 = $otherSignature->getImageResource();
-        
+
         $totalDifference = 0;
-        
+
         // For each pixel in the images, add up the color differences.
         for ($x = 0; $x < $width1; $x++) {
             for ($y = 0; $y < $height1; $y++) {
@@ -90,7 +90,7 @@ class Image
                 $totalDifference += $pixelDifference;
             }
         }
-        
+
         return $pixelDifference;
     }
     
