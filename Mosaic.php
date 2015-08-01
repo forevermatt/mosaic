@@ -78,6 +78,9 @@ class Mosaic
                 $finalMatchList[] = $bestMatch;
                 $bestMatch->markSourceImageAsUsed();
                 
+                // TEMP
+                echo count($bestNonExclusiveMatches) . PHP_EOL;
+                
                 //// TEMP
                 //$bestMatch->getSlice()->saveAsJpg($tempCounter . '_slice.jpg');
                 //$bestMatch->getSourceImage()
