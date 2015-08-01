@@ -157,7 +157,7 @@ class Image
         );
         
         if ( ! $successful) {
-            throw new Exception(
+            throw new \Exception(
                 sprintf(
                     'Failed to crop image down to %sx%s.%s',
                     $widthToUse,
@@ -298,7 +298,7 @@ class Image
         }
         
         if ($imageResource === false) {
-            throw new Exception(
+            throw new \Exception(
                 'Failed to read in image from "' . $pathToImage . '".',
                 1424348816
             );
