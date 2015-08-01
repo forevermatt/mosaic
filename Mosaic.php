@@ -191,7 +191,7 @@ class Mosaic
     public function getBestMatchForSlice(ImageSlice $slice, $sourceImages)
     {
         // Define what precision level to check initially.
-        $precision = 2;
+        $precision = 3;
         
         $bestMatches = $this->getBestMatchesForSliceAtPrecisionLevel(
             $slice,
