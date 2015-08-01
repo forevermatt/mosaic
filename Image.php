@@ -35,13 +35,25 @@ class Image
     public function __construct(
         $pathToImage = null,
         $desiredAspectRatio = null,
-        $maxWidth = null//,
-        //$maxHeight = null
+        $maxWidth = null,
+        $cacheInMemory = false
     ) {
         $this->pathToImage = $pathToImage;
         $this->desiredAspectRatio = $desiredAspectRatio;
         $this->maxWidth = $maxWidth;
-//        $this->maxHeight = $maxHeight;
+        
+        if ($pathToImage) {
+            $this->imageResource = $this->loadImage($this->pathToImage);
+            $this->getWidth();
+            $this->getHeight();
+            $this->getSignature(3);
+
+            if ($cacheInMemory) {
+                echo 'Cache "' . $this->getFileName() . '".' . PHP_EOL;
+            } else {
+                $this->imageResource = null;
+            }
+        }
     }
     
     /**
@@ -197,7 +209,7 @@ class Image
     {
         if ($this->imageResource === null) {
             if ($this->pathToImage !== null) {
-                $this->loadImage($this->pathToImage);
+                return $this->loadImage($this->pathToImage);
             }
         }
         return $this->imageResource;
@@ -280,7 +292,8 @@ class Image
     /**
      * Read in the image data from the file at the specified path.
      * 
-     * @param string $pathToImage The path to the image.
+     * @param string $pathToImage The path to the image file.
+     * @return resource The image resource.
      */
     public function loadImage($pathToImage)
     {
@@ -293,8 +306,13 @@ class Image
         $fileExtension = self::getFileExtension($pathToImage);
         if (($fileExtension === 'jpg') || ($fileExtension === 'jpeg')) {
             $imageResource = imagecreatefromjpeg($pathToImage);
-        } else {
+        } elseif ($fileExtension === 'png') {
             $imageResource = imagecreatefrompng($pathToImage);
+        } else {
+            throw new \Exception(
+                'Unknown file format: ' . $fileExtension,
+                1437785032
+            );
         }
         
         if ($imageResource === false) {
@@ -331,7 +349,13 @@ class Image
 //            $sizedIiamgeResource = imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h)
 //        }
         
-        $this->imageResource = $imageResource;
+        return $imageResource;
+        
+//        // TEMP
+//        $this->saveAsJpg(
+//            $this->getWidth() . 'x' . $this->getHeight() . '_'
+//            . $this->getFileName()
+//        );
     }
     
     /**
