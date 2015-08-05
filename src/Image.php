@@ -490,25 +490,25 @@ class Image
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
         
-        // Get the largest factor of 4 that's no bigger than our max-slice
-        // limit. (Basically, we'll slice the guide image in half both ways as
-        // many times as we can).
-        $numSlices = 4;
-        while ($numSlices <= $maxNumSlices) {
-            $numSlices *= 4;
+        // Get the largest square number that's no bigger than our max-slice
+        // limit.
+        $numSlices = 1;
+        $numSlicesPerSide = 1;
+        $maxNumSlicesPerSide = (int)floor(sqrt($maxNumSlices));
+        while ($numSlicesPerSide < $maxNumSlicesPerSide) {
+            $numSlicesPerSide += 1;
+            $numSlices = ($numSlicesPerSide * $numSlicesPerSide);
         }
-        $numSlices /= 4;
-        $numSlicesPerDirection = sqrt($numSlices);
         
         // Figure out the number of pixels (horizontal and vertical) in each
         // slice.
-        $hPixelsPerSlice = $imageWidth / $numSlicesPerDirection;
-        $vPixelsPerSlice = $imageHeight / $numSlicesPerDirection;
+        $hPixelsPerSlice = $imageWidth / $numSlicesPerSide;
+        $vPixelsPerSlice = $imageHeight / $numSlicesPerSide;
         
         // Extract all of the slices of the image.
         $slices = array();
-        for ($hSliceOffset = 0; $hSliceOffset < $numSlicesPerDirection; $hSliceOffset++) {
-            for ($vSliceOffset = 0; $vSliceOffset < $numSlicesPerDirection; $vSliceOffset++) {
+        for ($hSliceOffset = 0; $hSliceOffset < $numSlicesPerSide; $hSliceOffset++) {
+            for ($vSliceOffset = 0; $vSliceOffset < $numSlicesPerSide; $vSliceOffset++) {
                 
                 // Figure out where this slice will start.
                 $xStart = $hSliceOffset * $hPixelsPerSlice;
