@@ -28,32 +28,15 @@ class Image
      *     the specified path will be cropped to match the target aspect ratio.
      * @param int $maxWidth (Optional:) The max width to store of a copy of this
      *     image at (for internal use).
-     * @param bool $cacheInMemory (Optional:) Whether to store the image data in
-     *     memory. Defaults to false, in which case the image file is read in
-     *     again each time it is needed.
      */
     public function __construct(
         $pathToImage = null,
         $desiredAspectRatio = null,
-        $maxWidth = null,
-        $cacheInMemory = false
+        $maxWidth = null
     ) {
         $this->pathToImage = $pathToImage;
         $this->desiredAspectRatio = $desiredAspectRatio;
         $this->maxWidth = $maxWidth;
-        
-        if ($pathToImage) {
-            $this->imageResource = $this->loadImage($this->pathToImage);
-            $this->getWidth();
-            $this->getHeight();
-            $this->getSignature(3);
-
-            if ($cacheInMemory) {
-                echo 'Cache "' . $this->getFileName() . '".' . PHP_EOL;
-            } else {
-                $this->imageResource = null;
-            }
-        }
     }
     
     /**

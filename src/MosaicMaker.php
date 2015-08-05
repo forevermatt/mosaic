@@ -25,7 +25,7 @@ class MosaicMaker
         foreach ($pathsToSourceImages as $pathToSourceImage) {
             if (Image::isImageFile($pathToSourceImage)) {
                 try {
-                    $sourceImages[] = new Image(
+                    $sourceImages[] = new SourceImage(
                         $pathToSourceImage,
                         $guideImageAspectRatio,
                         100

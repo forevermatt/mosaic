@@ -11,7 +11,9 @@ class GuideImage extends Image
      */
     public function __construct($pathToImage = null)
     {
-        // Make sure the guide image is cached in memory.
-        parent::__construct($pathToImage, null, null, true);
+        parent::__construct($pathToImage);
+        $this->imageResource = $this->loadImage($this->pathToImage);
+        $this->getWidth();
+        $this->getHeight();
     }
 }
