@@ -550,12 +550,10 @@ class Image
         $yStop
     ) {
         // Calculate the target dimensions.
-        $width = round($xStop - $xStart);
-        $height = round($yStop - $yStart);
-        
-        // Calculate the whole-number width and height.
         $xStartRounded = round($xStart);
         $yStartRounded = round($yStart);
+        $width = round($xStop) - $xStartRounded;
+        $height = round($yStop) - $yStartRounded;
         
         // Create the image resource into which the slice will be put.
         $sliceImageResource = imagecreatetruecolor($width, $height);
