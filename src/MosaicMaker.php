@@ -45,12 +45,19 @@ class MosaicMaker
         $guideImageAspectRatio = $guideImage->getAspectRatio();
         
         $sourceImages = array();
+        $numSourceImageFiles = count($sourceImageFiles);
+        $numLoadedSourceImages = 0;
         foreach ($sourceImageFiles as $sourceImageFile) {
             try {
                 $sourceImages[] = new SourceImage(
                     $sourceImageFile,
                     $guideImageAspectRatio,
                     640
+                );
+                $numLoadedSourceImages += 1;
+                ProgressMeter::showProgress(
+                    'Loading source images',
+                    $numLoadedSourceImages / $numSourceImageFiles
                 );
             } catch (\Exception $e) {
                 echo 'Skipping "' . $sourceImageFile . '".' . PHP_EOL;
