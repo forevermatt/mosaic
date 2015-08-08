@@ -118,13 +118,13 @@ class Mosaic
         // Define how much bigger (that the guide image) to make the mosaic.
         $multiplier = 1;
         
-        // TEMP
-        echo sprintf(
-            'Creating %sx%s empty true-color image...%s',
-            $this->guideImage->getWidth() * $multiplier,
-            $this->guideImage->getHeight() * $multiplier,
-            PHP_EOL
-        );
+        //// TEMP
+        //echo sprintf(
+        //    'Creating %sx%s empty true-color image...%s',
+        //    $this->guideImage->getWidth() * $multiplier,
+        //    $this->guideImage->getHeight() * $multiplier,
+        //    PHP_EOL
+        //);
         
         $imageResource = imagecreatetruecolor(
             $this->guideImage->getWidth() * $multiplier,

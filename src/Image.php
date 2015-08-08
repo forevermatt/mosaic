@@ -26,7 +26,7 @@ class Image
         $imageResource,
         $targetAspectRatio
     ) {
-        echo 'Cropping image...' . PHP_EOL;
+        //echo 'Cropping image...' . PHP_EOL;
         
         $imageWidth = \imagesx($imageResource);
         $imageHeight = \imagesy($imageResource);
@@ -203,11 +203,11 @@ class Image
             );
         }
         
-        echo sprintf(
-            'Loading image "%s"...%s',
-            $this->getFileName(),
-            PHP_EOL
-        );
+        //echo sprintf(
+        //    'Loading image "%s"...%s',
+        //    $this->getFileName(),
+        //    PHP_EOL
+        //);
         
         $imageResource = $this->getImageResourceFromImageFile();
         $this->setImageResource($imageResource);
@@ -223,13 +223,13 @@ class Image
      */
     public function getSizedImage($desiredWidth, $desiredHeight)
     {
-        echo sprintf(
-            'Resizing %s to %sx%s...%s',
-            var_export($this->getFileName(), true),
-            $desiredWidth,
-            $desiredHeight,
-            PHP_EOL
-        );
+        //echo sprintf(
+        //    'Resizing %s to %sx%s...%s',
+        //    var_export($this->getFileName(), true),
+        //    $desiredWidth,
+        //    $desiredHeight,
+        //    PHP_EOL
+        //);
         
         $imageResource = $this->getImageResource();
         
