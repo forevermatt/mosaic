@@ -75,15 +75,4 @@ class MosaicMaker
         $mosaic->saveAs($filePathToMosaic);
         return $filePathToMosaic;
     }
-    
-    protected function getSourceImagePaths($pathToSourceImagesFolder)
-    {
-        $pathToGuideImage = $argv[1];
-        $pathsToSourceImages = array_merge(
-            glob(realpath($argv[2]) . '/*.*'),       // = the specified folder.
-            glob(realpath($argv[2]) . '/**/*.*'),    // = any immediate subfolders.
-            glob(realpath($argv[2]) . '/**/**/*.*'), // = any 2nd-level subfolders.
-            glob(realpath($argv[2]) . '/**/**/*.*')  // = any 3rd-level subfolders.
-        );
-    }
 }
