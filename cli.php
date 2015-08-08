@@ -10,17 +10,10 @@ if ($argc < 3) {
     return;
 }
 
-$pathToGuideImage = $argv[1];
-$pathsToSourceImages = array_merge(
-    glob(realpath($argv[2]) . '/*.*'),       // = the specified folder.
-    glob(realpath($argv[2]) . '/**/*.*'),    // = any immediate subfolders.
-    glob(realpath($argv[2]) . '/**/**/*.*'), // = any 2nd-level subfolders.
-    glob(realpath($argv[2]) . '/**/**/*.*')  // = any 3rd-level subfolders.
-);
-
 $mosaicFileName = forevermatt\mosaic\MosaicMaker::makeMosaic(
-    $pathToGuideImage,
-    $pathsToSourceImages
+    $argv[1],
+    $argv[2]
 );
 echo 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL;
-echo '(Run time: ' . (time() - $startTime) . ' seconds)' . PHP_EOL;
+echo '(Run time: ' . number_format((time() - $startTime) / 60, 2) . ' minutes)'
+    . PHP_EOL;
