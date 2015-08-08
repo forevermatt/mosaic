@@ -47,6 +47,7 @@ class MosaicMaker
         $sourceImages = array();
         $numSourceImageFiles = count($sourceImageFiles);
         $numLoadedSourceImages = 0;
+        $progressMeter = new ProgressMeter();
         foreach ($sourceImageFiles as $sourceImageFile) {
             try {
                 $sourceImages[] = new SourceImage(
@@ -55,7 +56,7 @@ class MosaicMaker
                     640
                 );
                 $numLoadedSourceImages += 1;
-                ProgressMeter::showProgress(
+                $progressMeter->showProgress(
                     'Loading source images',
                     $numLoadedSourceImages / $numSourceImageFiles
                 );
