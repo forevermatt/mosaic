@@ -10,7 +10,9 @@ class ProgressMeter
     
     public function __construct()
     {
-        $this->startedAt = microtime(true);
+        $now = microtime(true);
+        $this->lastUpdateAt = $now;
+        $this->startedAt = $now;
     }
     
     protected function calculateRemainingSeconds($currentRate, $currentProgress)
@@ -37,20 +39,19 @@ class ProgressMeter
         return self::getDurationAsString($now - $this->startedAt);
     }
     
-    protected function getRemainingTime($now, $percentComplete)
-    {
-        if (($this->lastUpdateAt !== null) && ($this->lastUpdatePercent !== null)) {
-            $secondsSinceLastUpdate = $now - $this->lastUpdateAt;
+    protected function getRemainingTime(
+        $secondsSinceLastUpdate,
+        $percentComplete
+    ) {
+        if ($this->lastUpdatePercent !== null) {
             $progressSinceLastUpdate = $percentComplete - $this->lastUpdatePercent;
             $rateSinceLastUpdate = $progressSinceLastUpdate / $secondsSinceLastUpdate;
             if ($this->currentRate === null) {
                 $this->currentRate = $rateSinceLastUpdate;
             }
-            if ($secondsSinceLastUpdate >= 1) {
-                $this->currentRate = $this->getNewCurrentRate(
-                    $rateSinceLastUpdate
-                );
-            }
+            $this->currentRate = $this->getNewCurrentRate(
+                $rateSinceLastUpdate
+            );
             $remainingSeconds = $this->calculateRemainingSeconds(
                 $this->currentRate,
                 $percentComplete
@@ -67,7 +68,7 @@ class ProgressMeter
     
     protected function getNewCurrentRate($rateSinceLastUpdate)
     {
-        return (0.2 * $this->currentRate) + (0.8 * $rateSinceLastUpdate);
+        return (0.8 * $this->currentRate) + (0.2 * $rateSinceLastUpdate);
     }
     
     /**
@@ -80,18 +81,24 @@ class ProgressMeter
     public function showProgress($taskName, $percentComplete)
     {
         $now = microtime(true);
-        $elapsedTime = $this->getElapsedTime($now);
-        $remainingTime = $this->getRemainingTime($now, $percentComplete);
-        
-        echo sprintf(
-            '%s: %\' 6.2f%%,  Elapsed time: %s%s' . PHP_EOL,
-            $taskName,
-            $percentComplete * 100,
-            $elapsedTime,
-            $remainingTime
-        );
-        
-        $this->lastUpdateAt = $now;
-        $this->lastUpdatePercent = $percentComplete;
+        $secondsSinceLastUpdate = $now - $this->lastUpdateAt;
+        if ($secondsSinceLastUpdate >= 0.999) {
+            $elapsedTime = $this->getElapsedTime($now);
+            $remainingTime = $this->getRemainingTime(
+                $secondsSinceLastUpdate,
+                $percentComplete
+            );
+
+            echo sprintf(
+                '%s: %\' 6.2f%%,  Elapsed time: %s%s' . PHP_EOL,
+                $taskName,
+                $percentComplete * 100,
+                $elapsedTime,
+                $remainingTime
+            );
+
+            $this->lastUpdateAt = $now;
+            $this->lastUpdatePercent = $percentComplete;
+        }
     }
 }
