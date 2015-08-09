@@ -240,7 +240,7 @@ class Image
         );
         
         // Otherwise return the resized image resource as a new Image.
-        $sizedImage = new Image();
+        $sizedImage = new static();
         $sizedImage->setImageResource($resizedImageResource);
         return $sizedImage;
     }
