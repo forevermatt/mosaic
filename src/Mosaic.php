@@ -69,6 +69,8 @@ class Mosaic
         // Take the most accurate match we found and record it in our final
         // list.
         $finalMatchList = array();
+        $progressMeter = new ProgressMeter();
+        $originalNumBNEMatches = count($bestNonExclusiveMatches);
         while (count($bestNonExclusiveMatches) > 0) {
             $bestMatch = $this->extractBestMatchFromList(
                 $bestNonExclusiveMatches
@@ -78,8 +80,10 @@ class Mosaic
                 $finalMatchList[] = $bestMatch;
                 $bestMatch->markSourceImageAsUsed();
                 
-                // TEMP
-                echo count($bestNonExclusiveMatches) . PHP_EOL;
+                $progressMeter->showProgress(
+                    'Finding matches',
+                    ($originalNumBNEMatches - $bestNonExclusiveMatches) / $originalNumBNEMatches
+                );
                 
                 //// TEMP
                 //$bestMatch->getSlice()->saveAsJpg($tempCounter . '_slice.jpg');
