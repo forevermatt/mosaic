@@ -54,6 +54,10 @@ class Mosaic
         
         // Make an interim list for tracking the initial comparison data.
         $bestNonExclusiveMatches = array();
+        
+        $tempCounter = 0;
+        $progressMeterOne = new ProgressMeter();
+        $numGuideImageSlices = count($this->guideImageSlices);
 
         // Compare each slice with each source image to find the best match.
         foreach ($this->guideImageSlices as $slice) {
@@ -61,15 +65,16 @@ class Mosaic
                 $slice,
                 $this->sourceImages
             );
+            $progressMeterOne->showProgress(
+                'Finding best non-exclusive matches',
+                ++$tempCounter / $numGuideImageSlices
+            );
         }
-        
-        // TEMP
-        $tempCounter = 0;
         
         // Take the most accurate match we found and record it in our final
         // list.
         $finalMatchList = array();
-        $progressMeter = new ProgressMeter();
+        $progressMeterTwo = new ProgressMeter();
         $originalNumBNEMatches = count($bestNonExclusiveMatches);
         while (count($bestNonExclusiveMatches) > 0) {
             $bestMatch = $this->extractBestMatchFromList(
@@ -80,8 +85,8 @@ class Mosaic
                 $finalMatchList[] = $bestMatch;
                 $bestMatch->markSourceImageAsUsed();
                 
-                $progressMeter->showProgress(
-                    'Finding matches',
+                $progressMeterTwo->showProgress(
+                    'Finding best final matches',
                     ($originalNumBNEMatches - $bestNonExclusiveMatches) / $originalNumBNEMatches
                 );
                 
@@ -127,11 +132,9 @@ class Mosaic
             $this->guideImage->getHeight() * $multiplier
         );
         
-        // TEMP
-        echo 'Inserting source images into new mosaic...' . PHP_EOL;
-        
-        // TEMP
         $tempCounter = 0;
+        $progressMeter = new ProgressMeter();
+        $numMatches = count($matches);
         
         foreach ($matches as $match) {
             /* @var $match Match */
@@ -159,9 +162,14 @@ class Mosaic
                 );
             }
             
-            $tempImage = new Image();
-            $tempImage->setImageResource($imageResource);
-            $tempImage->saveAsJpg('Step-' . ++$tempCounter . '.jpg');
+            $progressMeter->showProgress(
+                'Assembling mosaic',
+                ++$tempCounter / $numMatches
+            );
+            
+            //$tempImage = new Image();
+            //$tempImage->setImageResource($imageResource);
+            //$tempImage->saveAsJpg('Step-' . ++$tempCounter . '.jpg');
         }
         
         $image = new Image();
