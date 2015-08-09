@@ -138,7 +138,7 @@ class Image
     {
         $fileExtension = self::getFileExtension($this->pathToImage);
         if (($fileExtension === 'jpg') || ($fileExtension === 'jpeg')) {
-            $imageResource = imagecreatefromjpeg($this->pathToImage);
+            $imageResource = @imagecreatefromjpeg($this->pathToImage);
         } elseif ($fileExtension === 'png') {
             $imageResource = imagecreatefrompng($this->pathToImage);
         } else {
