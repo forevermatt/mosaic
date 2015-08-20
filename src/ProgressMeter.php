@@ -23,13 +23,16 @@ class ProgressMeter
     /**
      * Get a more friendly display of a duration.
      * 
-     * @param float $numSeconds The duration in seconds.
+     * @param float $seconds The duration in seconds.
      */
     public static function getDurationAsString($seconds)
     {
+        $minutes = floor($seconds / 60);
+        $hours = floor($minutes / 60);
         return sprintf(
-            '%02.0f:%02.0f',
-            floor($seconds / 60),
+            '%02.0f:%02.0f:%02.0f',
+            $hours,
+            ($minutes % 60),
             ($seconds % 60)
         );
     }
