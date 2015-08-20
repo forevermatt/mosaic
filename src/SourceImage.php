@@ -53,7 +53,7 @@ class SourceImage extends ComparableImage
             $tempFolderPath = dirname($tempFilePath);
             if (! is_dir($tempFolderPath)) {
                 echo 'Creating folder "' . $tempFolderPath . '"...' . PHP_EOL;
-                mkdir($tempFolderPath);
+                mkdir($tempFolderPath, 0777, true);
             }
             $this->saveAsJpg(
                 $tempFilePath,
