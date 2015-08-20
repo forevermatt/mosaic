@@ -71,7 +71,7 @@ class ProgressMeter
     
     protected function getNewCurrentRate($rateSinceLastUpdate)
     {
-        return (0.85 * $this->currentRate) + (0.15 * $rateSinceLastUpdate);
+        return (0.825 * $this->currentRate) + (0.175 * $rateSinceLastUpdate);
     }
     
     /**
