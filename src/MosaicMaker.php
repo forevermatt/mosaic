@@ -1,38 +1,67 @@
 <?php
-
 namespace forevermatt\mosaic;
 
 class MosaicMaker
 {
+    protected static function listImageFilesInFolder($pathToFolder)
+    {
+        $files = array();
+        $folderIterator = new \RecursiveDirectoryIterator($pathToFolder);
+        
+        foreach (new \RecursiveIteratorIterator($folderIterator) as $filePath)
+        {
+            // Filter out "." and "..".
+            if ($filePath->isDir()) {
+                continue;
+            }
+            
+            if (Image::isImageFile($filePath)) {
+                $files[] = $filePath;
+            }
+        }
+        
+        return $files;
+    }
+    
     /**
      * Make a mosaic that looks like the specified guide image using the
-     * specified source images.
+     * source images found in the specified folder.
      * 
      * @param string $pathToGuideImage The path to the guide image.
-     * @param array $pathsToSourceImages An array of (string) paths to the
-     *     source images.
-     * @return string The path to the mosaic image.
+     * @param string $pathToSourceImagesFolder The path to the folder that
+     *     contains the sources images.
+     * @return string The path to the newly created mosaic image.
      */
-    public static function makeMosaic($pathToGuideImage, $pathsToSourceImages)
-    {
-        // Step A: Get the guide image.
+    public static function makeMosaic(
+        $pathToGuideImage,
+        $pathToSourceImagesFolder
+    ) {
         $guideImage = new GuideImage($pathToGuideImage);
+        
+        $sourceImageFiles = self::listImageFilesInFolder(
+            $pathToSourceImagesFolder
+        );
         
         $guideImageAspectRatio = $guideImage->getAspectRatio();
         
-        // Step B: Get the source images.
         $sourceImages = array();
-        foreach ($pathsToSourceImages as $pathToSourceImage) {
-            if (Image::isImageFile($pathToSourceImage)) {
-                try {
-                    $sourceImages[] = new SourceImage(
-                        $pathToSourceImage,
-                        $guideImageAspectRatio,
-                        100
-                    );
-                } catch (\Exception $e) {
-                    echo 'Skipping "' . $pathToSourceImage . '".' . PHP_EOL;
-                }
+        $numSourceImageFiles = count($sourceImageFiles);
+        $numLoadedSourceImages = 0;
+        $progressMeter = new ProgressMeter();
+        foreach ($sourceImageFiles as $sourceImageFile) {
+            try {
+                $sourceImages[] = new SourceImage(
+                    $sourceImageFile,
+                    $guideImageAspectRatio,
+                    640
+                );
+                $numLoadedSourceImages += 1;
+                $progressMeter->showProgress(
+                    'Loading source images',
+                    $numLoadedSourceImages / $numSourceImageFiles
+                );
+            } catch (\Exception $e) {
+                echo 'Skipping "' . $sourceImageFile . '".' . PHP_EOL;
             }
         }
         

@@ -1,8 +1,10 @@
 <?php
 
 $startTime = time();
-
 require_once __DIR__ . '/vendor/autoload.php';
+
+use forevermatt\mosaic\MosaicMaker;
+use forevermatt\mosaic\ProgressMeter;
 
 if ($argc < 3) {
     echo 'Usage: php ' . basename(__FILE__)
@@ -10,17 +12,10 @@ if ($argc < 3) {
     return;
 }
 
-$pathToGuideImage = $argv[1];
-$pathsToSourceImages = array_merge(
-    glob(realpath($argv[2]) . '/*.*'),       // = the specified folder.
-    glob(realpath($argv[2]) . '/**/*.*'),    // = any immediate subfolders.
-    glob(realpath($argv[2]) . '/**/**/*.*'), // = any 2nd-level subfolders.
-    glob(realpath($argv[2]) . '/**/**/*.*')  // = any 3rd-level subfolders.
-);
-
-$mosaicFileName = forevermatt\mosaic\MosaicMaker::makeMosaic(
-    $pathToGuideImage,
-    $pathsToSourceImages
+$mosaicFileName = MosaicMaker::makeMosaic(
+    $argv[1],
+    $argv[2]
 );
 echo 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL;
-echo '(Run time: ' . (time() - $startTime) . ' seconds)' . PHP_EOL;
+echo '(Run time: ' . ProgressMeter::getDurationAsString(time() - $startTime) . ')'
+    . PHP_EOL;

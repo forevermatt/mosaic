@@ -2,7 +2,7 @@
 
 namespace forevermatt\mosaic;
 
-class ImageSlice extends Image
+class ImageSlice extends ComparableImage
 {
     public $xOffsetInParent = 0;
     public $yOffsetInParent = 0;
