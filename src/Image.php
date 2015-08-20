@@ -126,26 +126,40 @@ class Image
      */
     public function getImageResource()
     {
-        if (! $this->isImageResourceLoaded()) {
-            if ($this->hasPathToImage()) {
-                $this->loadImage();
-            }
+        if ($this->hasImageResource()) {
+            return $this->imageResource;
+        } elseif ($this->hasPathToImage()) {
+            return $this->getImageResourceFromImageFile();
+        } else {
+            throw new \Exception(
+                'No image resource available, and no image file available to '
+                . 'get the image resource from.',
+                1439755183
+            );
         }
-        return $this->imageResource;
     }
     
     public function getImageResourceFromImageFile()
     {
         $fileExtension = self::getFileExtension($this->pathToImage);
-        if (($fileExtension === 'jpg') || ($fileExtension === 'jpeg')) {
-            $imageResource = @imagecreatefromjpeg($this->pathToImage);
-        } elseif ($fileExtension === 'png') {
-            $imageResource = imagecreatefrompng($this->pathToImage);
-        } else {
-            throw new \Exception(
-                'Unknown file format: ' . $fileExtension,
-                1437785032
-            );
+        
+        switch ($fileExtension) {
+            
+            case 'jpg':
+            case 'jpeg':
+                $imageResource = \imagecreatefromjpeg($this->pathToImage);
+                break;
+
+            case 'png':
+                $imageResource = \imagecreatefrompng($this->pathToImage);
+                break;
+
+            default:
+                throw new \Exception(
+                    'Unknown file format: ' . $fileExtension,
+                    1437785032
+                );
+                break;
         }
         
         if ($imageResource === false) {
@@ -154,6 +168,9 @@ class Image
                 1424348816
             );
         }
+        
+        $this->setWidth(\imagesx($imageResource));
+        $this->setHeight(\imagesy($imageResource));
         
         return $imageResource;
     }
@@ -186,7 +203,7 @@ class Image
         );
     }
     
-    protected function isImageResourceLoaded()
+    protected function hasImageResource()
     {
         return ($this->imageResource !== null);
     }
