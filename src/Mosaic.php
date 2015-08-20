@@ -52,8 +52,7 @@ class Mosaic
             );
         }
         
-        // Make an interim list for tracking the initial comparison data.
-        $bestNonExclusiveMatches = array();
+        $bestMatches = array();
         
         $tempCounter = 0;
         $progressMeterOne = new ProgressMeter();
@@ -61,58 +60,95 @@ class Mosaic
 
         // Compare each slice with each source image to find the best match.
         foreach ($this->guideImageSlices as $slice) {
-            $bestNonExclusiveMatches[] = $this->getBestMatchForSlice(
-                $slice,
-                $this->sourceImages
-            );
+            
+            $smallestDifference = null;
+            $closestSourceImage = null;
+            foreach ($this->sourceImages as $sourceImage) {
+                /* @var $sourceImage SourceImage */
+
+                // If this image is no longer available, skip it.
+                if ( ! $sourceImage->isAvailable()) {
+                    continue;
+                }
+                
+                $difference = $slice->compareWith($sourceImage);
+
+                // If this is our first comparison for this slice
+                //    OR
+                // if this matches better than our previous best match for this
+                // slice...
+                if (($smallestDifference === null) ||
+                    ($difference < $smallestDifference)) {
+
+                    // Record that this is the best Match for this slice so far.
+                    $smallestDifference = $difference;
+                    $closestSourceImage = $sourceImage;
+                }
+                
+                // If it was a perfect match, move on to the next slice.
+                if ($difference === 0) {
+                    break;
+                }
+            }
+            
+            if ($closestSourceImage === null) {
+                throw new \Exception(
+                    'Unable to find match for slice.',
+                    1439124907
+                );
+            }
+            
+            $closestSourceImage->markAsUsed();
+            $bestMatches[] = new Match($slice, $closestSourceImage, $difference);
+
             $progressMeterOne->showProgress(
-                'Finding best non-exclusive matches',
+                'Finding best matches',
                 ++$tempCounter / $numGuideImageSlices
             );
         }
         
-        // Take the most accurate match we found and record it in our final
-        // list.
-        $finalMatchList = array();
-        $progressMeterTwo = new ProgressMeter();
-        $originalNumBNEMatches = count($bestNonExclusiveMatches);
-        while (count($bestNonExclusiveMatches) > 0) {
-            $bestMatch = $this->extractBestMatchFromList(
-                $bestNonExclusiveMatches
-            );
-            
-            if ($bestMatch->isSourceImageAvailable()) {
-                $finalMatchList[] = $bestMatch;
-                $bestMatch->markSourceImageAsUsed();
-                
-                $progressMeterTwo->showProgress(
-                    'Finding best final matches',
-                    ($originalNumBNEMatches - $bestNonExclusiveMatches) / $originalNumBNEMatches
-                );
-                
-                //// TEMP
-                //$bestMatch->getSlice()->saveAsJpg($tempCounter . '_slice.jpg');
-                //$bestMatch->getSourceImage()
-                //          ->getSizedImage(
-                //              $bestMatch->getSlice()->getWidth(),
-                //              $bestMatch->getSlice()->getHeight()
-                //          )
-                //          ->saveAsJpg($tempCounter . '_source-image.jpg');
-                //$tempCounter++;
-                
-            } else {
-                
-                // Find a new best match for that slice from among the
-                // remaining (i.e. - still unused) source images.
-                $newBestMatch = $this->getBestMatchForSlice(
-                    $bestMatch->getSlice(),
-                    $this->sourceImages
-                );
-                $bestNonExclusiveMatches[] = $newBestMatch;
-            }
-        }
+//        // Take the most accurate match we found and record it in our final
+//        // list.
+//        $finalMatchList = array();
+//        $progressMeterTwo = new ProgressMeter();
+//        $originalNumBNEMatches = count($bestNonExclusiveMatches);
+//        while (count($bestNonExclusiveMatches) > 0) {
+//            $bestMatch = $this->extractBestMatchFromList(
+//                $bestNonExclusiveMatches
+//            );
+//            
+//            if ($bestMatch->isSourceImageAvailable()) {
+//                $finalMatchList[] = $bestMatch;
+//                $bestMatch->markSourceImageAsUsed();
+//                
+//                $progressMeterTwo->showProgress(
+//                    'Finding best final matches',
+//                    ($originalNumBNEMatches - $bestNonExclusiveMatches) / $originalNumBNEMatches
+//                );
+//                
+//                //// TEMP
+//                //$bestMatch->getSlice()->saveAsJpg($tempCounter . '_slice.jpg');
+//                //$bestMatch->getSourceImage()
+//                //          ->getSizedImage(
+//                //              $bestMatch->getSlice()->getWidth(),
+//                //              $bestMatch->getSlice()->getHeight()
+//                //          )
+//                //          ->saveAsJpg($tempCounter . '_source-image.jpg');
+//                //$tempCounter++;
+//                
+//            } else {
+//                
+//                // Find a new best match for that slice from among the
+//                // remaining (i.e. - still unused) source images.
+//                $newBestMatch = $this->getBestMatchForSlice(
+//                    $bestMatch->getSlice(),
+//                    $this->sourceImages
+//                );
+//                $bestNonExclusiveMatches[] = $newBestMatch;
+//            }
+//        }
         
-        return $this->assembleImageFromMatches($finalMatchList);
+        return $this->assembleImageFromMatches($bestMatches);
     }
     
     /**
