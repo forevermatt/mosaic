@@ -75,7 +75,7 @@ class SourceImage extends ComparableImage
         $tempFilePath = $this->calculateTempFilePath();
         
         if (file_exists($tempFilePath)) {
-            $imageResource = imagecreatefromjpeg($tempFilePath);
+            $imageResource = \imagecreatefromjpeg($tempFilePath);
 
             if ($imageResource === false) {
                 throw new \Exception(
