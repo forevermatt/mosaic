@@ -80,7 +80,8 @@ class SliceGrid
             );
             
             // Figure out how close we were (either above or below) to having
-            // the number of rows (y) come out as a whole number.
+            // the number of rows (y) come out as a whole number. NOTE: Smaller
+            // accuracy values are better.
             $accuracyOfFit = min(
                 $yLeftoverFraction,
                 abs(1 - $yLeftoverFraction)
