@@ -20,10 +20,10 @@ class Mosaic
     {
         $this->guideImage = $guideImage;
         $this->sourceImages = $sourceImages;
-        
-        // Step C: Slice up the guide image into no more than the number of
-        // source images.
-        $this->guideImageSlices = $guideImage->slice(count($sourceImages) / 4);
+        $this->guideImageSlices = $guideImage->slice(
+            ($sourceImages / 4),
+            ($sourceImages / 8)
+        );
     }
     
     /**
