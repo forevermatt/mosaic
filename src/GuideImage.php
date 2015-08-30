@@ -67,33 +67,41 @@ class GuideImage extends Image
      * a pixel each direction).
      * 
      * @param int $maxNumSlices The (inclusive) maximum number of slices.
+     * @param int $minNumSlices The (inclusive) minimum number of slices.
      * @return ImageSlice[] An array of ImageSlices.
      */
-    public function slice($maxNumSlices)
+    public function slice($maxNumSlices, $minNumSlices)
     {
-        // Get the aspect ratio of the image.
+        // Get the dimensions the image.
         $imageWidth = $this->getWidth();
         $imageHeight = $this->getHeight();
         
+        // Calculate how to slice up the image.
+        $sliceGrid = new SliceGrid(
+            $maxNumSlices,
+            $minNumSlices,
+            ($imageWidth / $imageHeight)
+        );
+        
         // Get the largest square number that's no bigger than our max-slice
         // limit.
-        $numSlices = 1;
         $numSlicesPerSide = 1;
         $maxNumSlicesPerSide = (int)floor(sqrt($maxNumSlices));
         while ($numSlicesPerSide < $maxNumSlicesPerSide) {
             $numSlicesPerSide += 1;
-            $numSlices = ($numSlicesPerSide * $numSlicesPerSide);
         }
         
         // Figure out the number of pixels (horizontal and vertical) in each
         // slice.
-        $hPixelsPerSlice = $imageWidth / $numSlicesPerSide;
-        $vPixelsPerSlice = $imageHeight / $numSlicesPerSide;
+        $numColumns = $sliceGrid->getNumColumns();
+        $numRows = $sliceGrid->getNumRows();
+        $hPixelsPerSlice = $imageWidth / $numColumns;
+        $vPixelsPerSlice = $imageHeight / $numRows;
         
         // Extract all of the slices of the image.
         $slices = array();
-        for ($hSliceOffset = 0; $hSliceOffset < $numSlicesPerSide; $hSliceOffset++) {
-            for ($vSliceOffset = 0; $vSliceOffset < $numSlicesPerSide; $vSliceOffset++) {
+        for ($hSliceOffset = 0; $hSliceOffset < $numColumns; $hSliceOffset++) {
+            for ($vSliceOffset = 0; $vSliceOffset < $numRows; $vSliceOffset++) {
                 
                 // Figure out where this slice will start.
                 $xStart = $hSliceOffset * $hPixelsPerSlice;

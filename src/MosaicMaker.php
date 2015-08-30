@@ -42,8 +42,6 @@ class MosaicMaker
             $pathToSourceImagesFolder
         );
         
-        $guideImageAspectRatio = $guideImage->getAspectRatio();
-        
         $sourceImages = array();
         $numSourceImageFiles = count($sourceImageFiles);
         $numLoadedSourceImages = 0;
@@ -52,7 +50,7 @@ class MosaicMaker
             try {
                 $sourceImages[] = new SourceImage(
                     $sourceImageFile,
-                    $guideImageAspectRatio,
+                    4/3,
                     640
                 );
                 $numLoadedSourceImages += 1;
