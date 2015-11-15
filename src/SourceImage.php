@@ -27,6 +27,20 @@ class SourceImage extends ComparableImage
     }
     
     /**
+     * Calculate the path to a metadata file for this image.
+     * 
+     * @return string The metadata file path.
+     */
+    protected function calculateMetadataFilePath()
+    {
+        return sprintf(
+            'temp/%s/%s.json',
+            $this->desiredAspectRatio ?: 'any',
+            $this->getFileNameHash()
+        );
+    }
+
+    /**
      * Calculate the path to a temp file for this image.
      * 
      * @return string The temp file path.
@@ -126,6 +140,21 @@ class SourceImage extends ComparableImage
 //        return $imageResource;
 //    }
     
+    protected function getMetadata()
+    {
+        $metadataFilePath = $this->calculateMetadataFilePath();
+        if ( ! file_exists($metadataFilePath)) {
+            return null;
+        }
+        
+        $metadataJson = file_get_contents($metadataFilePath);
+        if ($metadataJson === false) {
+            return null;
+        }
+        
+        return json_decode($metadataJson);
+    }
+    
     /**
      * Find out whether this Image has already been marked as "used".
      * 
@@ -138,7 +167,11 @@ class SourceImage extends ComparableImage
     
     public function loadImage()
     {
+        $this->rejectIfKnownToHaveWrongOrientation();
+        
         parent::loadImage();
+        
+        $this->recordMetadataIfNotDoneYet();
         
         $imageResource = $this->imageResource;
         
@@ -188,5 +221,69 @@ class SourceImage extends ComparableImage
     public function markAsUsed()
     {
         $this->alreadyUsedInMosaic = true;
+    }
+
+    /**
+     * Record metadata to a file (if the metadata file has not yet been
+     * created).
+     * 
+     * NOTE: This should be done AFTER loading in the imageResource from the
+     * original image file but BEFORE any cropping is done to it. This also
+     * means that data such as the aspect ratio is that of the original file,
+     * not necessarily the version used in the mosaic (which may have been
+     * cropped).
+     */
+    protected function recordMetadataIfNotDoneYet()
+    {
+        $metadataFilePath = $this->calculateMetadataFilePath();
+        
+        // If we have not yet saved a metadata file for this image, do so.
+        if ( ! file_exists($metadataFilePath)) {
+            
+            $metadataFolderPath = dirname($metadataFilePath);
+            if ( ! is_dir($metadataFolderPath)) {
+                echo 'Creating folder "' . $metadataFolderPath . '"...' . PHP_EOL;
+                mkdir($metadataFolderPath, 0777, true);
+            }
+            
+            file_put_contents(
+                $metadataFilePath,
+                json_encode(array(
+                    'ar' => $this->getAspectRatio(),
+                ))
+            );
+        }
+    }
+    
+    protected function rejectIfKnownToHaveWrongOrientation()
+    {
+        if ($this->desiredAspectRatio === null) {
+            throw new \Exception(
+                'We can only reject source images know to have the wrong '
+                . 'orientation if given a desired aspect ratio.',
+                1447550416
+            );
+        }
+        
+        $metadata = $this->getMetadata();
+        
+        if (($metadata !== null) && (array_key_exists('ar', $metadata))) {
+            
+            $actualAspectRatio = $metadata->ar;
+            $actualOrientation = Image::getOrientationFromAspectRatio(
+                $actualAspectRatio
+            );
+            $requiredOrientation = Image::getOrientationFromAspectRatio(
+                $this->desiredAspectRatio
+            );
+
+            if ($actualOrientation !== $requiredOrientation) {
+                throw new \Exception(
+                    'Known to have incorrect orientation (should be '
+                    . $requiredOrientation . ').',
+                    1447550306
+                );
+            }
+        }
     }
 }
