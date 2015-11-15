@@ -94,9 +94,22 @@ class SourceImage extends ComparableImage
 //    {
 //        $imageResource = null;
 //        try {
-//            $exifThumbnail = exif_thumbnail($pathToJpg);
+//            $exifThumbnail = \exif_thumbnail($pathToJpg);
 //            if ($exifThumbnail !== false) {
-//                $imageResource = imagecreatefromstring($exifThumbnail);
+//                $imageResource = \imagecreatefromstring($exifThumbnail);
+//                $thumbnailWidth = \imagesx($imageResource);
+//                if ($this->maxWidth !== null) {
+//                    if ($thumbnailWidth < $this->maxWidth) {
+//                        $imageResource = null;
+//                        echo sprintf(
+//                            'Note: Thumbnail too small (%s < %s) for "%s".%s',
+//                            $thumbnailWidth,
+//                            $this->maxWidth,
+//                            $pathToJpg,
+//                            PHP_EOL
+//                        );
+//                    }
+//                }
 //            }
 //        } catch (\Exception $e) {
 //            echo sprintf(
@@ -107,7 +120,7 @@ class SourceImage extends ComparableImage
 //        }
 //        
 //        if (! $imageResource) {
-//            $imageResource = imagecreatefromjpeg($pathToJpg);
+//            $imageResource = parent::getImageResourceFromJpgFile($pathToJpg);
 //        }
 //        
 //        return $imageResource;
