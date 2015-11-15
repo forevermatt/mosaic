@@ -51,7 +51,7 @@ class MosaicMaker
                 $sourceImages[] = new SourceImage(
                     $sourceImageFile,
                     4/3,
-                    640
+                    120
                 );
                 $numLoadedSourceImages += 1;
                 $progressMeter->showProgress(
