@@ -1,6 +1,9 @@
 # Mosaic Maker #
 
-## Plan ##
+A set of PHP classes for assembling a mosaic, designed to look like a given 
+guide image, using a set of source images.
+
+## Basic Approach ##
 
 A. Get guide image.
 B. Get source images.
@@ -48,3 +51,7 @@ Only accuracy calculations at matching resolutions give a meaningful comparison.
   A portion of the original guide image.
 - *source images*:
   The images being used to recreate the guide image as a mosaic.
+
+## License
+
+This software is under the MIT license.
