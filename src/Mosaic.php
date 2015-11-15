@@ -161,7 +161,7 @@ class Mosaic
     protected function assembleImageFromMatches($matches)
     {
         // Define how much bigger (than the guide image) to make the mosaic.
-        $multiplier = 1;
+        $multiplier = 2;
         
         $imageResource = imagecreatetruecolor(
             $this->guideImage->getWidth() * $multiplier,
