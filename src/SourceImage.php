@@ -143,6 +143,19 @@ class SourceImage extends ComparableImage
         $imageResource = $this->imageResource;
         
         if ($this->desiredAspectRatio !== null) {
+            
+            $requiredOrientation = Image::getOrientationFromAspectRatio(
+                $this->desiredAspectRatio
+            );
+
+            // Only accept proper orientation pictures.
+            if ( ! $this->hasOrientation($requiredOrientation)) {
+                throw new \Exception(
+                    'Incorrect orientation (should be ' . $requiredOrientation . ').',
+                    1441638938
+                );
+            }
+
             if ($this->desiredAspectRatio !== $this->getAspectRatio()) {
                 $imageResource = self::cropImageResourceToAspectRatio(
                     $imageResource,

@@ -3,6 +3,12 @@ namespace forevermatt\mosaic;
 
 class Image
 {
+    const ORIENTATION_LANDSCAPE = 'landscape';
+    const ORIENTATION_PANORAMA_HORIZONTAL = 'panorama-horizontal';
+    const ORIENTATION_PANORAMA_VERTICAL = 'panorama-vertical';
+    const ORIENTATION_PORTRAIT = 'portrait';
+    const ORIENTATION_SQUARE = 'square';
+    
     protected $pathToImage = null;
     protected $imageResource = null;
     
@@ -179,6 +185,26 @@ class Image
         
         return $imageResource;
     }
+    
+    protected function getOrientation()
+    {
+        return self::getOrientationFromAspectRatio($this->getAspectRatio());
+    }
+    
+    protected static function getOrientationFromAspectRatio($aspectRatio)
+    {
+        if ($aspectRatio >= 2) {
+            return self::ORIENTATION_PANORAMA_HORIZONTAL;
+        } elseif ($aspectRatio > 1) {
+            return self::ORIENTATION_LANDSCAPE;
+        } elseif ($aspectRatio <= 0.5) {
+            return self::ORIENTATION_PANORAMA_VERTICAL;
+        } elseif ($aspectRatio < 1) {
+            return self::ORIENTATION_PORTRAIT;
+        } else {
+            return self::ORIENTATION_SQUARE;
+        }
+    }
 
     public function getWidth()
     {
@@ -192,6 +218,11 @@ class Image
             }
         }
         return $this->width;
+    }
+    
+    public function hasOrientation($requiredOrientation)
+    {
+        return ($this->getOrientation() === $requiredOrientation);
     }
     
     protected function hasPathToImage()
