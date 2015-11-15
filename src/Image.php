@@ -139,6 +139,11 @@ class Image
         }
     }
     
+    protected function getImageResourceFromJpgFile($pathToImage)
+    {
+        return \imagecreatefromjpeg($pathToImage);
+    }
+    
     public function getImageResourceFromImageFile()
     {
         $fileExtension = self::getFileExtension($this->pathToImage);
@@ -147,7 +152,7 @@ class Image
             
             case 'jpg':
             case 'jpeg':
-                $imageResource = \imagecreatefromjpeg($this->pathToImage);
+                $imageResource = $this->getImageResourceFromJpgFile($this->pathToImage);
                 break;
 
             case 'png':
