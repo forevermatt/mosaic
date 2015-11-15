@@ -34,7 +34,8 @@ class MosaicMaker
      */
     public static function makeMosaic(
         $pathToGuideImage,
-        $pathToSourceImagesFolder
+        $pathToSourceImagesFolder,
+        $verboseOutput = false
     ) {
         $guideImage = new GuideImage($pathToGuideImage);
         
@@ -59,7 +60,14 @@ class MosaicMaker
                     $numLoadedSourceImages / $numSourceImageFiles
                 );
             } catch (\Exception $e) {
-                echo 'Skipping "' . $sourceImageFile . '".' . PHP_EOL;
+                if ($verboseOutput) {
+                    echo sprintf(
+                        'Skipping "%s": %s%s',
+                        $sourceImageFile,
+                        $e->getMessage(),
+                        PHP_EOL
+                    );
+                }
             }
         }
         
