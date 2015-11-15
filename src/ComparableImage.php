@@ -38,6 +38,9 @@ class ComparableImage extends Image
         $totalDifference = 0;
 
         // For each pixel in the images, add up the color differences.
+        //
+        // @TODO: Optimize this to speed it up.
+        //
         for ($x = 0; $x < $width1; $x++) {
             for ($y = 0; $y < $height1; $y++) {
                 $color1 = imagecolorsforindex(
