@@ -85,7 +85,7 @@ class ProgressMeter
     {
         $now = microtime(true);
         $secondsSinceLastUpdate = $now - $this->lastUpdateAt;
-        if ($secondsSinceLastUpdate >= 0.999) {
+        if (($secondsSinceLastUpdate >= 0.999) || ($percentComplete >= 1.00)) {
             $elapsedTime = $this->getElapsedTime($now);
             $remainingTime = $this->getRemainingTime(
                 $secondsSinceLastUpdate,
