@@ -45,7 +45,7 @@ class MosaicMaker
         
         $sourceImages = array();
         $numSourceImageFiles = count($sourceImageFiles);
-        $numLoadedSourceImages = 0;
+        $numProcessedSourceImages = 0;
         $progressMeter = new ProgressMeter();
         foreach ($sourceImageFiles as $sourceImageFile) {
             try {
@@ -53,11 +53,6 @@ class MosaicMaker
                     $sourceImageFile,
                     4/3,
                     120
-                );
-                $numLoadedSourceImages += 1;
-                $progressMeter->showProgress(
-                    'Loading source images',
-                    $numLoadedSourceImages / $numSourceImageFiles
                 );
             } catch (\Exception $e) {
                 if ($verboseOutput) {
@@ -69,6 +64,11 @@ class MosaicMaker
                     );
                 }
             }
+            $numProcessedSourceImages += 1;
+            $progressMeter->showProgress(
+                'Loading source images',
+                $numProcessedSourceImages / $numSourceImageFiles
+            );
         }
         
         // Create a mosaic from those slices/images.
