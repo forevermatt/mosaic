@@ -20,10 +20,20 @@ class Mosaic
     {
         $this->guideImage = $guideImage;
         $this->sourceImages = $sourceImages;
+        
         $numSourceImages = count($sourceImages);
+        $maxNumSlices = min(
+            3000,
+            ($numSourceImages / 2)
+        );
+        $minNumSlices = min(
+            2500,
+            ($maxNumSlices - 50)
+        );
+        
         $this->guideImageSlices = $guideImage->slice(
-            ($numSourceImages / 4),
-            ($numSourceImages / 8)
+            $maxNumSlices,
+            $minNumSlices
         );
     }
     
