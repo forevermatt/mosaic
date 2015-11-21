@@ -1,5 +1,7 @@
 {
     "name": "forevermatt/mosaic",
+    "description": "A set of PHP classes for assembling a mosaic, designed to look like a given guide image, using a set of source images.",
+    "type": "library",
     "require-dev": {
         "phpunit/phpunit": "4.*"
     },
@@ -7,7 +9,7 @@
     "authors": [
         {
             "name": "forevermatt",
-            "email": "forevermatt@gmail.com"
+            "email": "forevermatt@users.noreply.github.com"
         }
     ],
     "require": {},
