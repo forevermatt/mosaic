@@ -100,8 +100,8 @@ class GuideImage extends Image
         
         // Extract all of the slices of the image.
         $slices = array();
-        for ($hSliceOffset = 0; $hSliceOffset < $numColumns; $hSliceOffset++) {
-            for ($vSliceOffset = 0; $vSliceOffset < $numRows; $vSliceOffset++) {
+        for ($vSliceOffset = 0; $vSliceOffset < $numRows; $vSliceOffset++) {
+            for ($hSliceOffset = 0; $hSliceOffset < $numColumns; $hSliceOffset++) {
                 
                 // Figure out where this slice will start.
                 $xStart = $hSliceOffset * $hPixelsPerSlice;
