@@ -58,7 +58,7 @@ class ComparableImage extends Image
             }
         }
 
-        return $pixelDifference;
+        return $totalDifference;
     }
     
     /**
