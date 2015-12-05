@@ -3,20 +3,22 @@ namespace forevermatt\mosaic;
 
 class MosaicMaker
 {
-    protected static function listImageFilesInFolder($pathToFolder)
+    protected static function listImageFilesInFolders($pathsToFolders)
     {
         $files = array();
-        $folderIterator = new \RecursiveDirectoryIterator($pathToFolder);
-        
-        foreach (new \RecursiveIteratorIterator($folderIterator) as $filePath)
-        {
-            // Filter out "." and "..".
-            if ($filePath->isDir()) {
-                continue;
-            }
-            
-            if (Image::isImageFile($filePath)) {
-                $files[] = $filePath;
+        foreach ($pathsToFolders as $pathToFolder) {
+            $folderIterator = new \RecursiveDirectoryIterator($pathToFolder);
+
+            foreach (new \RecursiveIteratorIterator($folderIterator) as $filePath)
+            {
+                // Filter out "." and "..".
+                if ($filePath->isDir()) {
+                    continue;
+                }
+
+                if (Image::isImageFile($filePath)) {
+                    $files[] = $filePath;
+                }
             }
         }
         
@@ -28,19 +30,19 @@ class MosaicMaker
      * source images found in the specified folder.
      * 
      * @param string $pathToGuideImage The path to the guide image.
-     * @param string $pathToSourceImagesFolder The path to the folder that
-     *     contains the sources images.
+     * @param array $pathsToSourceImagesFolders An array of the path(s) to the
+     *     folder(s) that contain the sources images.
      * @return string The path to the newly created mosaic image.
      */
     public static function makeMosaic(
         $pathToGuideImage,
-        $pathToSourceImagesFolder,
+        $pathsToSourceImagesFolders,
         $verboseOutput = false
     ) {
         $guideImage = new GuideImage($pathToGuideImage);
         
-        $sourceImageFiles = self::listImageFilesInFolder(
-            $pathToSourceImagesFolder
+        $sourceImageFiles = self::listImageFilesInFolders(
+            $pathsToSourceImagesFolders
         );
         
         $sourceImages = array();

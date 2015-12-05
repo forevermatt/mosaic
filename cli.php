@@ -12,9 +12,16 @@ if ($argc < 3) {
     return;
 }
 
+$pathToGuideImage = $argv[1];
+
+$pathsToSourceImagesFolders = array();
+for ($i = 2; $i < $argc; $i++) {
+    $pathsToSourceImagesFolders[] = $argv[$i];
+}
+
 $mosaicFileName = MosaicMaker::makeMosaic(
-    $argv[1],
-    $argv[2]
+    $pathToGuideImage,
+    $pathsToSourceImagesFolders
 );
 echo 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL;
 echo '(Run time: ' . ProgressMeter::getDurationAsString(time() - $startTime) . ')'
