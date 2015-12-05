@@ -63,7 +63,7 @@ class ComparableImage extends Image
     
     /**
      * Compare this image with the given image using signatures (i.e. downsized
-     * copies of the each image).
+     * copies of each image).
      * 
      * @param ComparableImage $otherImage The Image to compare this Image with.
      * @return int The difference between the two signatures.
