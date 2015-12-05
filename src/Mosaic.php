@@ -113,7 +113,7 @@ class Mosaic
             $bestMatches[] = new Match($slice, $closestSourceImage, $difference);
 
             $progressMeterOne->showProgress(
-                'Finding best matches',
+                'Finding best matches  (2/3)',
                 ++$tempCounter / $numGuideImageSlices
             );
         }
@@ -210,7 +210,7 @@ class Mosaic
             }
             
             $progressMeter->showProgress(
-                'Assembling mosaic',
+                'Assembling mosaic     (3/3)',
                 ++$tempCounter / $numMatches
             );
             
