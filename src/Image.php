@@ -3,6 +3,9 @@ namespace forevermatt\mosaic;
 
 class Image
 {
+    const COLOR_MAX_VALUE = 255;
+    const COLOR_VALUES_PER_PIXEL = 3;
+    
     const ORIENTATION_LANDSCAPE = 'landscape';
     const ORIENTATION_PANORAMA_HORIZONTAL = 'panorama-horizontal';
     const ORIENTATION_PANORAMA_VERTICAL = 'panorama-vertical';

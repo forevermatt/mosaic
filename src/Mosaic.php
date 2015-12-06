@@ -408,13 +408,11 @@ class Mosaic
         $differences = array_map(function($match) {
             return $match->getDifference();
         }, $matches);
-        $maxColorValue = 255;
-        $numColorValuesPerPixel = 3;
         $pixelsPerSignature = ComparableImage::SIGNATURE_PRECISION *
                               ComparableImage::SIGNATURE_PRECISION;
         $averageDifference = array_sum($differences) / count($differences);
-        $maxPossibleDifference = $maxColorValue * $numColorValuesPerPixel *
-                                 $pixelsPerSignature;
+        $maxPossibleDifference = Image::COLOR_MAX_VALUE *
+            Image::COLOR_VALUES_PER_PIXEL * $pixelsPerSignature;
         $averageDifferenceAsPercentage = $averageDifference / $maxPossibleDifference;
         $averageSimilarityPerSignature = 1 - $averageDifferenceAsPercentage;
         echo sprintf(
