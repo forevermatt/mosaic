@@ -11,6 +11,11 @@ class ComparableImage extends Image
     /**
      * Get the actual color difference between the two given signature images.
      * 
+     * NOTE: The bit-shifting technique for getting RGB values from pixels only
+     * works for true-color image resources (not GIF's, for example). See
+     * "http://php.net/manual/en/function.imagecolorsforindex.php#84969" for
+     * details.
+     * 
      * @param Image $signature1 The first image's signature.
      * @param Image $signature2 The second image's signature.
      * @return int The difference between the two signatures Images.
@@ -43,17 +48,17 @@ class ComparableImage extends Image
         //
         for ($x = 0; $x < $width1; $x++) {
             for ($y = 0; $y < $height1; $y++) {
-                $color1 = imagecolorsforindex(
-                    $imageResource1,
-                    imagecolorat($imageResource1, $x, $y)
-                );
-                $color2 = imagecolorsforindex(
-                    $imageResource2,
-                    imagecolorat($imageResource2, $x, $y)
-                );
-                $pixelDifference = abs($color1['red'] - $color2['red'])
-                    + abs($color1['green'] - $color2['green'])
-                    + abs($color1['blue'] - $color2['blue']);
+                $rgba1 = imagecolorat($imageResource1, $x, $y);
+                $r1 = ($rgba1 >> 16) & 0xFF;
+                $g1 = ($rgba1 >> 8) & 0xFF;
+                $b1 = $rgba1 & 0xFF;
+                $rgba2 = imagecolorat($imageResource2, $x, $y);
+                $r2 = ($rgba2 >> 16) & 0xFF;
+                $g2 = ($rgba2 >> 8) & 0xFF;
+                $b2 = $rgba2 & 0xFF;
+                $pixelDifference = abs($r1 - $r2)
+                                 + abs($g1 - $g2)
+                                 + abs($b1 - $b2);
                 $totalDifference += $pixelDifference;
             }
         }
