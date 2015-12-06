@@ -24,6 +24,15 @@ $mosaicFileName = MosaicMaker::makeMosaic(
     $pathToGuideImage,
     $pathsToSourceImagesFolders
 );
-echo 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL;
+echo PHP_EOL . 'Saved mosaic as "' . $mosaicFileName . '".' . PHP_EOL . PHP_EOL;
 echo '(Run time: ' . ProgressMeter::getDurationAsString(time() - $startTime) . ')'
     . PHP_EOL;
+
+$similarity = MosaicMaker::calculateSimilarity(
+    $pathToGuideImage,
+    $mosaicFileName
+);
+echo sprintf(
+    '(Similarity to guide: %.2f%%)' . PHP_EOL,
+    ($similarity * 100)
+);
