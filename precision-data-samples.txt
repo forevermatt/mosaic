@@ -1,0 +1,18 @@
+SMALL SET OF SOURCE IMAGES (~1,500):
+
+precision       run time        mos. sim.       gain/time-cost
+1                7 s            75.57           -
+2                8 s            77.85           2.28 / 12.5 %   = 18.24
+3               12 s            79.04           1.19 / 50 %     =  2.38
+4               15 s            79.43           0.39 / 25 %     =  1.56
+5               20 s            79.55           0.12 / 33 %     =  0.36
+6               25 s            79.71           0.16 / 25 %     =  0.64
+7               32 s            79.77           0.06 / 28 %     =  0.24
+
+---------------------------
+
+LARGE SET OF SOURCE IMAGES (~11,000):
+
+precision       run time        mos. sim.       gain/time-cost
+3               452 s           81.95           -
+4               655 s           82.35           0.40 / 45 % =  0.89

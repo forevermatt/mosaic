@@ -3,6 +3,9 @@ namespace forevermatt\mosaic;
 
 class Image
 {
+    const COLOR_MAX_VALUE = 255;
+    const COLOR_VALUES_PER_PIXEL = 3;
+    
     const ORIENTATION_LANDSCAPE = 'landscape';
     const ORIENTATION_PANORAMA_HORIZONTAL = 'panorama-horizontal';
     const ORIENTATION_PANORAMA_VERTICAL = 'panorama-vertical';
@@ -242,6 +245,18 @@ class Image
     protected function hasImageResource()
     {
         return ($this->imageResource !== null);
+    }
+    
+    /**
+     * Find out whether this image has the same dimensions as the given image.
+     * 
+     * @param Image $otherImage
+     * @return bool
+     */
+    public function hasSameDimensionsAs($otherImage)
+    {
+        return (($this->getWidth() === $otherImage->getWidth()) &&
+                ($this->getHeight() === $otherImage->getHeight()));
     }
     
     /**

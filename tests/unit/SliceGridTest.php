@@ -64,6 +64,9 @@ class SliceGridTest extends \PHPUnit_Framework_TestCase
         array(16, 10, /*4:3*/ 1.3333333333333, /*4:3*/ 1.3333333333333, 4, 4),
         array(160000, 90000, /*4:3*/ 1.3333333333333, /*4:3*/ 1.3333333333333, 400, 400),
         array(159999, 90000, /*4:3*/ 1.3333333333333, /*4:3*/ 1.3333333333333, 399, 399),
+        
+        // Odd scenario where maxNumColumns was ending up less than minNumColumns.
+        array(1270, 1220, /*3:2*/ 1.5, /*4:3*/ 1.3333333333333, 37, 33),
     );
     
     public function testAllTestCases()

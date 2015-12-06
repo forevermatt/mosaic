@@ -46,7 +46,7 @@ class SliceGrid
             );
         }
         
-        $minNumColumns = (int)ceil(
+        $minNumColumns = (int)floor(
             round(
                 sqrt(
                     ($minSlices / $guideImageAspectRatio) / $desiredSliceAspectRatio
