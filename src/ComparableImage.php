@@ -9,6 +9,38 @@ class ComparableImage extends Image
     protected $signature = null;
     
     /**
+     * Calculate how similar this Image is with the given Image. If the Images
+     * are different sizes, the given Image will be resized to match this one's
+     * dimensions, but otherwise it will be a full-size, pixel-for-pixel
+     * comparison.
+     * 
+     * @param Image $otherImage The other image. NOTE: Its image resource will
+     *     be modified if the sizes don't match.
+     * @return float The similarity between the two images as a percentage,
+     *     where 1.0 (100%) means they are identical identical and 0.0 (0%)
+     *     means they have no similarity.
+     */
+    public function calculateSimilarityTo($otherImage)
+    {
+        if ( ! $this->hasSameDimensionsAs($otherImage)) {
+            $resizedImageResource = Image::resizeImageResource(
+                $otherImage->getImageResource(),
+                $this->getWidth(),
+                $this->getHeight()
+            );
+            $otherImage->setImageResource($resizedImageResource);
+        }
+        
+        $absoluteDifference = $this->getAbsoluteDifference($otherImage);
+        $numPixels = $this->getWidth() * $this->getHeight();
+        $maxPossibleDifference = Image::COLOR_MAX_VALUE *
+            Image::COLOR_VALUES_PER_PIXEL * $numPixels;
+        $differenceAsPercentage = $absoluteDifference / $maxPossibleDifference;
+        $similarity = 1 - $differenceAsPercentage;
+        return $similarity;
+    }
+    
+    /**
      * Get the actual color difference between the two given signature images.
      * 
      * NOTE: The bit-shifting technique for getting RGB values from pixels only

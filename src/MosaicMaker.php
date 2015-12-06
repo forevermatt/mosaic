@@ -3,6 +3,33 @@ namespace forevermatt\mosaic;
 
 class MosaicMaker
 {
+    public static function calculateSimilarity($pathToImage1, $pathToImage2)
+    {
+        if ( ! Image::isImageFile($pathToImage1)) {
+            throw new \InvalidArgumentException(
+                sprintf('Error: "%s" is not an image file.', $pathToImage1),
+                1449430004
+            );
+        }
+        
+        if ( ! Image::isImageFile($pathToImage2)) {
+            throw new \InvalidArgumentException(
+                sprintf('Error: "%s" is not an image file.', $pathToImage2),
+                1449430075
+            );
+        }
+        
+        $image1 = new ComparableImage($pathToImage1);
+        $image2 = new ComparableImage($pathToImage2);
+        
+        echo sprintf(
+            'Similarity between "%s" and "%s": %\' 6.2f%%' . PHP_EOL,
+            $image1->getFileName(),
+            $image2->getFileName(),
+            ($image1->calculateSimilarityTo($image2) * 100)
+        );
+    }
+    
     protected static function listImageFilesInFolders($pathsToFolders)
     {
         $files = array();
