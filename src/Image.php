@@ -248,6 +248,18 @@ class Image
     }
     
     /**
+     * Find out whether this image has the same dimensions as the given image.
+     * 
+     * @param Image $otherImage
+     * @return bool
+     */
+    public function hasSameDimensionsAs($otherImage)
+    {
+        return (($this->getWidth() === $otherImage->getWidth()) &&
+                ($this->getHeight() === $otherImage->getHeight()));
+    }
+    
+    /**
      * Read in the image data from this Image's image file.
      */
     public function loadImage()
