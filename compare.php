@@ -15,4 +15,10 @@ if ($argc < 3) {
 $pathToImage1 = $argv[1];
 $pathToImage2 = $argv[2];
 
-MosaicMaker::calculateSimilarity($pathToImage1, $pathToImage2);
+$similarity = MosaicMaker::calculateSimilarity($pathToImage1, $pathToImage2);
+echo sprintf(
+    'Similarity between "%s" and "%s": %.2f%%' . PHP_EOL,
+    basename($pathToImage1),
+    basename($pathToImage2),
+    ($similarity * 100)
+);

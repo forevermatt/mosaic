@@ -20,14 +20,9 @@ class MosaicMaker
         }
         
         $image1 = new ComparableImage($pathToImage1);
-        $image2 = new ComparableImage($pathToImage2);
+        $image2 = new Image($pathToImage2);
         
-        echo sprintf(
-            'Similarity between "%s" and "%s": %\' 6.2f%%' . PHP_EOL,
-            $image1->getFileName(),
-            $image2->getFileName(),
-            ($image1->calculateSimilarityTo($image2) * 100)
-        );
+        return $image1->calculateSimilarityTo($image2);
     }
     
     protected static function listImageFilesInFolders($pathsToFolders)
