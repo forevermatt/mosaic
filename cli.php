@@ -8,7 +8,8 @@ use forevermatt\mosaic\ProgressMeter;
 
 if ($argc < 3) {
     echo 'Usage: php ' . basename(__FILE__)
-        . ' path/to/guide-image.jpg path/to/source/images/' . PHP_EOL;
+        . ' path/to/guide-image.jpg path/to/source/images/ '
+        . '[path/to/more/source/images [...]]' . PHP_EOL;
     return;
 }
 
