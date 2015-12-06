@@ -159,9 +159,6 @@ class Mosaic
 //            }
 //        }
         
-        // Show some statistical information about the accuracy of the matches.
-        $this->showStatisticalDifferences($bestMatches);
-        
         return $this->assembleImageFromMatches($bestMatches);
     }
     
@@ -401,23 +398,5 @@ class Mosaic
     {
         $image = $this->getAsImage();
         $image->saveAsJpg($pathAndFilename);
-    }
-    
-    protected function showStatisticalDifferences($matches)
-    {
-        $differences = array_map(function($match) {
-            return $match->getDifference();
-        }, $matches);
-        $pixelsPerSignature = ComparableImage::SIGNATURE_PRECISION *
-                              ComparableImage::SIGNATURE_PRECISION;
-        $averageDifference = array_sum($differences) / count($differences);
-        $maxPossibleDifference = Image::COLOR_MAX_VALUE *
-            Image::COLOR_VALUES_PER_PIXEL * $pixelsPerSignature;
-        $averageDifferenceAsPercentage = $averageDifference / $maxPossibleDifference;
-        $averageSimilarityPerSignature = 1 - $averageDifferenceAsPercentage;
-        echo sprintf(
-            'Average similarity per signature: %\' 6.2f%%' . PHP_EOL,
-            $averageSimilarityPerSignature * 100
-        );
     }
 }
