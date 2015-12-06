@@ -18,7 +18,10 @@ class ComparableImage extends Image
      * 
      * @param Image $signature1 The first image's signature.
      * @param Image $signature2 The second image's signature.
-     * @return int The difference between the two signatures Images.
+     * @return int|float The difference between the two signatures Images. See
+     *     the "Integer overflow" section of the webpage at
+     *     "http://php.net/manual/en/language.types.integer.php" for details
+     *     about when this will return a float.
      */
     protected function getAbsoluteDifference($otherSignature)
     {
