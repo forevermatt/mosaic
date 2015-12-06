@@ -62,6 +62,38 @@ class GuideImage extends Image
     }
     
     /**
+     * Prioritize the list of guide image slices so that we don't simply use up
+     * the best source image matches at one edge of the resulting mosaic.
+     * 
+     * @param ImageSlice[] $slices The array of guide image slices.
+     * @return ImageSlice[] The array of image slices in the order that should
+     *     be used for finding matching source images.
+     */
+    protected static function prioritizeGuideImageSlices($slices)
+    {
+        $prioritizedSlices = array();
+        $numSlices = count($slices);
+        
+        /* For every group of four slices, take the 1st from every group, then
+         * the 3rd from every group, then the 2nd, then the 4th (to effectively
+         * "fill in" the mosaic in four passes, so all the best matches aren't
+         * used up towards one side of the mosaic).  */
+        for ($i = 0; $i < $numSlices; $i += 4) {
+            $prioritizedSlices[] = $slices[$i];
+        }
+        for ($i = 2; $i < $numSlices; $i += 4) {
+            $prioritizedSlices[] = $slices[$i];
+        }
+        for ($i = 1; $i < $numSlices; $i += 4) {
+            $prioritizedSlices[] = $slices[$i];
+        }
+        for ($i = 3; $i < $numSlices; $i += 4) {
+            $prioritizedSlices[] = $slices[$i];
+        }
+        return $prioritizedSlices;
+    }
+    
+    /**
      * Slice this Image into no more than the specified number of slices. The
      * slices will (essentially) have the same aspect ratio as the image (within
      * a pixel each direction).
@@ -117,7 +149,8 @@ class GuideImage extends Image
             }
         }
         
-        // Return the resulting array of Images sliced from the original.
-        return $slices;
+        // Prioritize and return the resulting array of Images sliced from the
+        // original.
+        return self::prioritizeGuideImageSlices($slices);
     }
 }
