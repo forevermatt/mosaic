@@ -3,6 +3,24 @@
 A set of PHP classes for assembling a mosaic, designed to look like a given 
 guide image, using a set of source images.
 
+## Usage ##
+
+Pick a directory where the temp folder (used for caching source image data) can
+be kept. Open a command prompt in that folder, and run the following:
+
+    php <path/to/cli.php> <path/to/guide-image.jpg> <path/to/source/images/>
+
+Replace the values in angle brackets with actual paths. For example, replace
+```<path/to/cli.php>``` with something like ```"C:\code\mosaic\cli.php"```
+(depending on where you cloned this repo to on your computer). Note that any
+additional command-line parameters are treated as additional folders containing
+source images to be used for generating the mosaic.
+
+**The first time you run this**, it will probably take quite some time since it
+has not yet cached downsized copies of your source images (and therefor it has
+to do a lot of image resizing). The next (and subsequent) times should be much
+faster.
+
 ## Basic Approach ##
 
 A. Get guide image.
