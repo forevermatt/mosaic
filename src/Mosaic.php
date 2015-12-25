@@ -12,9 +12,8 @@ class Mosaic
     /**
      * Create a new Mosaic from the given sets of images.
      * 
-     * @param array $guideImageSlices The array of Image slices
-     *     from the guide image.
-     * @param array $sourceImages The array of source Images.
+     * @param GuideImage $guideImage The guide image.
+     * @param SourceImage[] $sourceImages The array of Source Images.
      */
     public function __construct($guideImage, $sourceImages)
     {
