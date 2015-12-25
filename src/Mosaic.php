@@ -23,7 +23,7 @@ class Mosaic
         $numSourceImages = count($sourceImages);
         $maxNumSlices = min(
             3000,
-            ($numSourceImages / 2)
+            ($numSourceImages / 3)
         );
         $minNumSlices = min(
             2500,
