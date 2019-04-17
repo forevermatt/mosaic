@@ -12,7 +12,9 @@
             "email": "forevermatt@users.noreply.github.com"
         }
     ],
-    "require": {},
+    "require": {
+        "behat/behat": "^3.5"
+    },
     "autoload": {
         "psr-4": {"forevermatt\\mosaic\\": "src/"}
     }
