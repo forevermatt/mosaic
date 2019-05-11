@@ -90,7 +90,7 @@ class MosaicMaker
             }
             $numProcessedSourceImages += 1;
             $progressMeter->showProgress(
-                'Loading source images (1/3)',
+                'Loading source images (1/4)',
                 $numProcessedSourceImages / $numSourceImageFiles
             );
         }
