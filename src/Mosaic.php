@@ -112,18 +112,17 @@ class Mosaic
         // Go through that list.
         foreach ($bestMatchBySlice as $sliceIndex => $lowestDifferenceValue) {
             $slice = $this->guideImageSlices[$sliceIndex];
+            
             $differenceFromSourceImages = $differenceDataBySlice[$sliceIndex];
             foreach ($differenceFromSourceImages as $sourceImageIndex => $difference) {
                 /* @var $sourceImage SourceImage */
                 $sourceImage = $this->sourceImages[$sourceImageIndex];
 
-                // If this image is no longer available, skip it.
-                if ( ! $sourceImage->isAvailable()) {
-                    continue;
+                if ($sourceImage->isAvailable()) {
+                    $sourceImage->markAsUsed();
+                    $bestMatches[] = new Match($slice, $sourceImage, $difference);
+                    break;
                 }
-                
-                $sourceImage->markAsUsed();
-                $bestMatches[] = new Match($slice, $sourceImage, $difference);
             }
 
             $progressMeterOne->showProgress(
