@@ -18,16 +18,18 @@ class FeatureContext implements Context
     /** @var string */
     protected $pathToImage;
     
-    /** @var string */
-    protected $pathToTopUpPhoto = __DIR__ . '/../test-images/up.jpg';
-    
     /**
-     * @Given I have an image where the top is up
+     * @Given I have an image where the top should be up
      */
-    public function iHaveAnImageWhereTheTopIsUp()
+    public function iHaveAnImageWhereTheTopShouldBeUp()
     {
-        Assert::assertFileExists($this->pathToTopUpPhoto);
-        $this->pathToImage = $this->pathToTopUpPhoto;
+        $this->pathToImage = $this->getPathToTestImage('top');
+        Assert::assertFileExists($this->pathToImage);
+    }
+    
+    protected function getPathToTestImage(string $sideThatShouldBeUp)
+    {
+        return __DIR__ . '/../test-images/' . $sideThatShouldBeUp . '.jpg';
     }
 
     /**
@@ -39,9 +41,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then the top should be up
+     * @Then the top should now be up
      */
-    public function theTopShouldBeUp()
+    public function theTopShouldNowBeUp()
     {
         $this->assertTopIsUp($this->pathToImage, $this->loadedImage);
     }
@@ -105,5 +107,56 @@ class FeatureContext implements Context
         );
         Assert::assertTrue($success, 'Failed to resize image for comparing / test');
         return $resizedImageResource;
+    }
+
+    /**
+     * @Given I have an image where the right side should be up
+     */
+    public function iHaveAnImageWhereTheRightSideShouldBeUp()
+    {
+        $this->pathToImage = $this->getPathToTestImage('right');
+        Assert::assertFileExists($this->pathToImage);
+    }
+
+    /**
+     * @Then the right side should now be up
+     */
+    public function theRightSideShouldNowBeUp()
+    {
+        $this->assertRightSideIsUp($this->pathToImage, $this->loadedImage);
+    }
+
+    /**
+     * @Given I have an image where the bottom should be up
+     */
+    public function iHaveAnImageWhereTheBottomShouldBeUp()
+    {
+        $this->pathToImage = $this->getPathToTestImage('bottom');
+        Assert::assertFileExists($this->pathToImage);
+    }
+
+    /**
+     * @Then the bottom should now be up
+     */
+    public function theBottomShouldNowBeUp()
+    {
+        $this->assertBottomIsUp($this->pathToImage, $this->loadedImage);
+    }
+
+    /**
+     * @Given I have an image where the left side should be up
+     */
+    public function iHaveAnImageWhereTheLeftSideShouldBeUp()
+    {
+        $this->pathToImage = $this->getPathToTestImage('left');
+        Assert::assertFileExists($this->pathToImage);
+    }
+
+    /**
+     * @Then the left side should now be up
+     */
+    public function theLeftSideShouldNowBeUp()
+    {
+        $this->assertLeftSideIsUp($this->pathToImage, $this->loadedImage);
     }
 }
