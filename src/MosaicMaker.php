@@ -106,4 +106,58 @@ class MosaicMaker
         $mosaic->saveAs($filePathToMosaic);
         return $filePathToMosaic;
     }
+    
+    public static function purgeRotatedImagesFromCache(
+        $pathsToSourceImagesFolders,
+        $verboseOutput = false
+    ) {
+        $sourceImageFiles = self::listImageFilesInFolders(
+            $pathsToSourceImagesFolders
+        );
+        
+        $numSourceImageFiles = count($sourceImageFiles);
+        $numProcessedSourceImages = 0;
+        $progressMeter = new ProgressMeter();
+        foreach ($sourceImageFiles as $sourceImageFile) {
+            try {
+                $orientation = Image::getOrientationFromExifData($sourceImageFile);
+                if (empty($orientation) || ($orientation === 1)) {
+                    continue;
+                }
+            } catch (\Throwable $e) {
+                echo $e->getMessage() . PHP_EOL;
+            }
+            
+            try {
+                $cachePrefix = sprintf(
+                    'temp/%s/%s',
+                    4/3,
+                    md5(basename($sourceImageFile))
+                );
+                $thumbnailCache = $cachePrefix . '.jpg';
+                if (is_file($thumbnailCache)) {
+                    unlink($thumbnailCache);
+                }
+                $metadata = $cachePrefix . '.json';
+                if (is_file($metadata)) {
+                    unlink($metadata);
+                }
+                
+            } catch (\Exception $e) {
+                if ($verboseOutput) {
+                    echo sprintf(
+                        'Skipping "%s": %s%s',
+                        $sourceImageFile,
+                        $e->getMessage(),
+                        PHP_EOL
+                    );
+                }
+            }
+            $numProcessedSourceImages += 1;
+            $progressMeter->showProgress(
+                'Purging rotated images from cache',
+                $numProcessedSourceImages / $numSourceImageFiles
+            );
+        }
+    }
 }
