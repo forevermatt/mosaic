@@ -67,52 +67,66 @@ class Mosaic
         $tempCounter = 0;
         $progressMeterOne = new ProgressMeter();
         $numGuideImageSlices = count($this->guideImageSlices);
+        $numSourceImages = count($this->sourceImages);
+        $numCombinations = $numGuideImageSlices * $numSourceImages;
 
-        // Compare each slice with each source image to find the best match.
-        foreach ($this->guideImageSlices as $slice) {
-            
-            $smallestDifference = null;
-            $closestSourceImage = null;
-            foreach ($this->sourceImages as $sourceImage) {
+        // Compare each slice with each source image.
+        $differenceDataBySlice = [];
+        for ($sliceIndex = 0; $sliceIndex < $numGuideImageSlices; $sliceIndex++) {
+            $slice = $this->guideImageSlices[$sliceIndex];
+            $differenceFromSourceImages = [];
+            for ($sourceImageIndex = 0; $sourceImageIndex < $numSourceImages; $sourceImageIndex++) {
                 /* @var $sourceImage SourceImage */
-
-                // If this image is no longer available, skip it.
-                if ( ! $sourceImage->isAvailable()) {
-                    continue;
-                }
+                $sourceImage = $this->sourceImages[$sourceImageIndex];
                 
-                $difference = $slice->compareWith($sourceImage);
-
-                // If this is our first comparison for this slice
-                //    OR
-                // if this matches better than our previous best match for this
-                // slice...
-                if (($smallestDifference === null) ||
-                    ($difference < $smallestDifference)) {
-
-                    // Record that this is the best Match for this slice so far.
-                    $smallestDifference = $difference;
-                    $closestSourceImage = $sourceImage;
-                }
+                $differenceFromSourceImages[$sourceImageIndex] = $slice->compareWith($sourceImage);
                 
-                // If it was a perfect match, move on to the next slice.
-                if ($difference === 0) {
-                    break;
-                }
-            }
-            
-            if ($closestSourceImage === null) {
-                throw new \Exception(
-                    'Unable to find match for slice.',
-                    1439124907
+                $progressMeterOne->showProgress(
+                    'Comparing             (2/4)',
+                    ++$tempCounter / $numCombinations
                 );
             }
             
-            $closestSourceImage->markAsUsed();
-            $bestMatches[] = new Match($slice, $closestSourceImage, $difference);
+            // Sort the differences so that the best match is first in the array
+            // without changing which key goes with which value.
+            asort($differenceFromSourceImages);
+            
+            $differenceDataBySlice[$sliceIndex] = $differenceFromSourceImages;
+        }
+        
+        // Now go through and select which source image to use for each slice.
+        $bestMatchBySlice = array_map(
+            function ($differenceFromSourceImages) {
+                foreach($differenceFromSourceImages as $sourceImageIndex => $difference) {
+                    return $difference;
+                }
+            },
+            $differenceDataBySlice
+        );
+        
+        // Sort that list to have the slices with the worse "best match" first.
+        arsort($bestMatchBySlice);
+        
+        $tempCounter = 0;
+        
+        // Go through that list.
+        foreach ($bestMatchBySlice as $sliceIndex => $lowestDifferenceValue) {
+            $slice = $this->guideImageSlices[$sliceIndex];
+            
+            $differenceFromSourceImages = $differenceDataBySlice[$sliceIndex];
+            foreach ($differenceFromSourceImages as $sourceImageIndex => $difference) {
+                /* @var $sourceImage SourceImage */
+                $sourceImage = $this->sourceImages[$sourceImageIndex];
+
+                if ($sourceImage->isAvailable()) {
+                    $sourceImage->markAsUsed();
+                    $bestMatches[] = new Match($slice, $sourceImage, $difference);
+                    break;
+                }
+            }
 
             $progressMeterOne->showProgress(
-                'Finding best matches  (2/3)',
+                'Getting matches       (3/4)',
                 ++$tempCounter / $numGuideImageSlices
             );
         }
@@ -209,7 +223,7 @@ class Mosaic
             }
             
             $progressMeter->showProgress(
-                'Assembling mosaic     (3/3)',
+                'Assembling mosaic     (4/4)',
                 ++$tempCounter / $numMatches
             );
             
