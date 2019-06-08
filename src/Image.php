@@ -160,7 +160,7 @@ class Image
     
     protected function rotateIfNecessary($imageResource, $pathToImage)
     {
-        $orientation = $this->getOrientationFromExifData($pathToImage);
+        $orientation = self::getOrientationFromExifData($pathToImage);
         if ($orientation === 6) {
             return imagerotate($imageResource, -90, 0);
         } elseif ($orientation === 8) {
@@ -169,7 +169,7 @@ class Image
         return $imageResource;
     }
     
-    protected function getOrientationFromExifData($pathToImage)
+    public static function getOrientationFromExifData($pathToImage)
     {
         $exifData = exif_read_data($pathToImage);
         return $exifData['Orientation'] ?? null;
