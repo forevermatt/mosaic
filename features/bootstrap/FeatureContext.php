@@ -1,9 +1,6 @@
 <?php
 
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 use forevermatt\mosaic\Image;
 use PHPUnit\Framework\Assert;
 
@@ -57,19 +54,26 @@ class FeatureContext implements Context
     
     protected function assertImagesMatch($imageResource1, $imageResource2)
     {
-        $this->assertDimensionsMatch($imageResource1, $imageResource2);
-        
-        $desiredSize = 5;
-        $smaller1 = self::resizeImageForTest($imageResource1, $desiredSize, $desiredSize);
-        $smaller2 = self::resizeImageForTest($imageResource2, $desiredSize, $desiredSize);
-        
-        for ($x = 0; $x < $desiredSize; $x++) {
-            for ($y = 0; $y < $desiredSize; $y++) {
-                Assert::assertSame(
-                    imagecolorat($smaller1, $x, $y),
-                    imagecolorat($smaller2, $x, $y)
-                );
+        try {
+            $this->assertDimensionsMatch($imageResource1, $imageResource2);
+            
+            $desiredSize = 5;
+            $smaller1 = self::resizeImageForTest($imageResource1, $desiredSize, $desiredSize);
+            $smaller2 = self::resizeImageForTest($imageResource2, $desiredSize, $desiredSize);
+            
+            for ($x = 0; $x < $desiredSize; $x++) {
+                for ($y = 0; $y < $desiredSize; $y++) {
+                    Assert::assertSame(
+                        imagecolorat($smaller1, $x, $y),
+                        imagecolorat($smaller2, $x, $y),
+                        sprintf('The pixels as (%s, %s) are different', $x, $y)
+                    );
+                }
             }
+        } catch (\Exception $e) {
+            $this->saveAsJpg($imageResource1, 'different-1.jpg');
+            $this->saveAsJpg($imageResource2, 'different-2.jpg');
+            throw $e;
         }
     }
     
@@ -85,8 +89,8 @@ class FeatureContext implements Context
         $height2 = imagesy($imageResource2);
         Assert::assertNotFalse($height2);
         
-        Assert::assertSame($width1, $width2);
-        Assert::assertSame($height1, $height2);
+        Assert::assertSame($width1, $width2, 'The images are different widths');
+        Assert::assertSame($height1, $height2, 'The images are different heights');
     }
     
     protected static function resizeImageForTest($imageResource, $desiredWidth, $desiredHeight)
@@ -108,6 +112,15 @@ class FeatureContext implements Context
         Assert::assertTrue($success, 'Failed to resize image for comparing / test');
         return $resizedImageResource;
     }
+    
+    protected function saveAsJpg($imageResource, $filename)
+    {
+        Assert::assertTrue(
+            imagejpeg($imageResource, $filename, 95),
+            'Failed to save image resource as ' . $filename
+        );
+        echo 'Saved image to ' . realpath($filename) . ' (' . $filename . ')' . PHP_EOL;
+    }
 
     /**
      * @Given I have an image where the right side should be up
@@ -124,6 +137,14 @@ class FeatureContext implements Context
     public function theRightSideShouldNowBeUp()
     {
         $this->assertRightSideIsUp($this->pathToImage, $this->loadedImage);
+    }
+    
+    protected function assertRightSideIsUp(string $pathToImage, Image $loadedImage)
+    {
+        $imageWithTopToTheRight = imagecreatefromjpeg($pathToImage);
+        $imageWithRightSideUp = imagerotate($imageWithTopToTheRight, 90, 0);
+        $correctedImage = $loadedImage->getImageResource();
+        $this->assertImagesMatch($imageWithRightSideUp, $correctedImage);
     }
 
     /**
@@ -158,5 +179,13 @@ class FeatureContext implements Context
     public function theLeftSideShouldNowBeUp()
     {
         $this->assertLeftSideIsUp($this->pathToImage, $this->loadedImage);
+    }
+    
+    protected function assertLeftSideIsUp(string $pathToImage, Image $loadedImage)
+    {
+        $imageWithTopToTheLeft = imagecreatefromjpeg($pathToImage);
+        $imageWithLeftSideUp = imagerotate($imageWithTopToTheLeft, -90, 0);
+        $correctedImage = $loadedImage->getImageResource();
+        $this->assertImagesMatch($imageWithLeftSideUp, $correctedImage);
     }
 }

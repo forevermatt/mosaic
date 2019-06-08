@@ -150,7 +150,29 @@ class Image
     
     protected function getImageResourceFromJpgFile($pathToImage)
     {
-        return \imagecreatefromjpeg($pathToImage);
+        $resourceFromFile = imagecreatefromjpeg($pathToImage);
+        $potentiallyRotatedResource = $this->rotateIfNecessary(
+            $resourceFromFile,
+            $pathToImage
+        );
+        return $potentiallyRotatedResource;
+    }
+    
+    protected function rotateIfNecessary($imageResource, $pathToImage)
+    {
+        $orientation = $this->getOrientationFromExifData($pathToImage);
+        if ($orientation === 6) {
+            return imagerotate($imageResource, -90, 0);
+        } elseif ($orientation === 8) {
+            return imagerotate($imageResource, 90, 0);
+        }
+        return $imageResource;
+    }
+    
+    protected function getOrientationFromExifData($pathToImage)
+    {
+        $exifData = exif_read_data($pathToImage);
+        return $exifData['Orientation'] ?? null;
     }
     
     public function getImageResourceFromImageFile()

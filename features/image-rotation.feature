@@ -9,5 +9,4 @@ Feature: Rotate images properly
     | side       |
     | top        |
     | right side |
-    | bottom     |
     | left side  |
