@@ -1,3 +1,7 @@
+# ARCHIVED - This repo is no longer maintained
+
+---
+
 # Mosaic Maker #
 
 A set of PHP classes for assembling a mosaic, designed to look like a given 
